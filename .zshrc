@@ -159,3 +159,4 @@ source <(fzf --zsh)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias f="xdg-open ."
 alias dots=~/scripts/dotfiles.sh
+alias obs=xdg-open "obsidian://open?vault=Personal" &
