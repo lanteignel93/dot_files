@@ -401,7 +401,12 @@ globalkeys = gears.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function()
         menubar.show()
-    end, { description = "show the menubar", group = "launcher" })
+    end, { description = "show the menubar", group = "launcher" }),
+    awful.key({}, "Print", function()
+        awful.util.spawn_with_shell(
+            "gnome-screenshot -acf /tmp/my-screenshot && cat /tmp/my-screenshot | xclip -i -selection clipboard -target image/png"
+        )
+    end, { description = "Take a screenshot of entire screen", group = "screenshot" })
 )
 
 clientkeys = gears.table.join(
