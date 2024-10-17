@@ -642,6 +642,6 @@ end)
 -- Gaps
 beautiful.useless_gap = 10
 -- Autostart Application
--- awful.spawn.with_shell("xrandr --output DP-2 --rotate right")
+awful.spawn.with_shell("xrandr --output DP-2 --rotate right")
 awful.spawn.with_shell("/home/laurent/.config/awesome/autostart.sh")
 awful.spawn.with_shell("/home/laurent/.config/polybar/launch.sh")
