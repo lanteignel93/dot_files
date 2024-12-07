@@ -128,7 +128,10 @@ source $ZSH/oh-my-zsh.sh
 
 # Display a "we are in a virtualenv" indicator that works in child shells too
 #VIRTUAL_ENV_DISABLE_PROMPT=1
-#RPS1='$(zsh_virtualenv_prompt)'
+#RPS1='$(zsh_virtualenv_prompt)'#
+#
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
@@ -154,9 +157,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completioni
 alias python=python3
 source ~/powerlevel10k/powerlevel10k.zsh-theme
-source <(fzf --zsh)
+# source <(fzf --zsh)
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias f="xdg-open ."
 alias dots=~/scripts/dotfiles.sh
-alias obs=xdg-open "obsidian://open?vault=Personal" &
+alias obs='xdg-open "obsidian://open?vault=Personal" &'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
