@@ -1,5 +1,5 @@
-require 'core.options'  -- Load general options
-require 'core.keymaps'  -- Load general keymaps
+require 'core.options' -- Load general options
+require 'core.keymaps' -- Load general keymaps
 require 'core.snippets' -- Custom code snippets
 
 -- Install package manager
@@ -41,7 +41,7 @@ require('lazy').setup({
   require 'plugins.bufferline',
   require 'plugins.neo-tree',
   require 'plugins.alpha',
-  require 'plugins.indent-blankline',
+  -- require 'plugins.indent-blankline',
   require 'plugins.lazygit',
   require 'plugins.comment',
   require 'plugins.debug',
@@ -49,8 +49,10 @@ require('lazy').setup({
   require 'plugins.database',
   require 'plugins.misc',
   require 'plugins.harpoon',
-  require 'plugins.avante',
+  -- require 'plugins.avante',
   require 'plugins.venv-selector',
+  require 'plugins.leetcode',
+  require 'plugins.noise',
   -- require 'plugins.code-runner',
 }, {
   ui = {
