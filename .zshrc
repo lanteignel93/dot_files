@@ -161,5 +161,6 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 alias f="xdg-open ."
 alias dots=~/scripts/dotfiles.sh
+alias obs_update=~/scripts/git_obsidian.sh
 alias obs='xdg-open "obsidian://open?vault=Personal" &'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
