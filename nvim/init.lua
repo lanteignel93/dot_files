@@ -1,5 +1,5 @@
-require 'core.options' -- Load general options
-require 'core.keymaps' -- Load general keymaps
+require 'core.options'  -- Load general options
+require 'core.keymaps'  -- Load general keymaps
 require 'core.snippets' -- Custom code snippets
 
 -- Install package manager
@@ -27,6 +27,11 @@ local themes = {
   gruvbox = 'plugins.themes.gruvbox',
   catppuccin = 'plugins.themes.catppuccin',
   kanagawa = 'plugins.themes.kanagawa',
+  miasma = 'plugins.themes.miasma',
+  tokyodark = 'plugins.themes.tokyodark',
+  eldritch = 'plugins.themes.eldritch',
+  cyberpunk = 'plugins.themes.cyberpunk',
+  fluoromachine = 'plugins.themes.fluoromachine',
 }
 
 -- Setup plugins
@@ -36,24 +41,26 @@ require('lazy').setup({
   require 'plugins.treesitter',
   require 'plugins.lsp',
   require 'plugins.autocompletion',
-  require 'plugins.none-ls',
+  -- require 'plugins.none-ls',
+  require 'plugins.copilot',
   require 'plugins.lualine',
+  require 'plugins.indent-blankline',
   require 'plugins.bufferline',
   require 'plugins.neo-tree',
   require 'plugins.alpha',
-  -- require 'plugins.indent-blankline',
+  require 'plugins.project',
   require 'plugins.lazygit',
   require 'plugins.comment',
   require 'plugins.debug',
-  require 'plugins.gitsigns',
+  -- require 'plugins.gitsigns',
   require 'plugins.database',
   require 'plugins.misc',
   require 'plugins.harpoon',
-  -- require 'plugins.avante',
   require 'plugins.venv-selector',
   require 'plugins.leetcode',
   require 'plugins.noise',
-  -- require 'plugins.code-runner',
+  require 'plugins.copilot-chat',
+  require 'plugins.themery',
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the

@@ -211,6 +211,7 @@ return { -- LSP Configuration & Plugins
       sqlls = {},
       terraformls = {},
       yamlls = {},
+      clangd = {},
       bashls = {},
       graphql = {},
       cssls = {},
