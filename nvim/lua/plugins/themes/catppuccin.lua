@@ -4,7 +4,7 @@ return {
   priority = 1000,
   config = function()
     require('catppuccin').setup {
-      background = { light = 'latte', dark = 'mocha' }, -- latte, frappe, macchiato, mocha
+      background = { light = 'latte', dark = 'macchiato' }, -- latte, frappe, macchiato, mocha
       dim_inactive = {
         enabled = false,
         -- Dim inactive splits/windows/buffers.

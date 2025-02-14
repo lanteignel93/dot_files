@@ -30,13 +30,22 @@ local themes = {
   miasma = 'plugins.themes.miasma',
   tokyodark = 'plugins.themes.tokyodark',
   eldritch = 'plugins.themes.eldritch',
-  cyberpunk = 'plugins.themes.cyberpunk',
   fluoromachine = 'plugins.themes.fluoromachine',
+  makurai = 'plugins.themes.makurai',
+  rose_pine = 'plugins.themes.rose-pine',
 }
 
 -- Setup plugins
 require('lazy').setup({
-  require(themes[env_var_nvim_theme]),
+   -- require(themes[env_var_nvim_theme]),
+  -- Load all themes
+  (function()
+   local theme_plugins = {}
+     for _, theme in pairs(themes) do
+       table.insert(theme_plugins, require(theme))
+     end
+   return theme_plugins
+  end)(),
   require 'plugins.telescope',
   require 'plugins.treesitter',
   require 'plugins.lsp',

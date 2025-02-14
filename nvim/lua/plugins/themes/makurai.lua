@@ -1,8 +1,8 @@
 return {
-    'samueljoli/cyberpunk.nvim',
+    "skardyy/makurai-nvim",
     lazy = false,
     priority = 1000,
     config = function()
-        vim.cmd("colorscheme cyberpunk")
+        vim.cmd("colorscheme miasma")
     end,
 }
