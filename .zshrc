@@ -165,3 +165,4 @@ alias obs_update=~/scripts/git_obsidian.sh
 alias obs='xdg-open "obsidian://open?vault=Personal" &'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 NVIM_THEME="gruvbox"
+alias leet="nvim leetcode.nvim"

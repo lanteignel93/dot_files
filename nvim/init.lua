@@ -24,7 +24,6 @@ local env_var_nvim_theme = os.getenv 'NVIM_THEME' or default_color_scheme
 local themes = {
   nord = 'plugins.themes.nord',
   onedark = 'plugins.themes.onedark',
-  gruvbox = 'plugins.themes.gruvbox',
   catppuccin = 'plugins.themes.catppuccin',
   kanagawa = 'plugins.themes.kanagawa',
   miasma = 'plugins.themes.miasma',
@@ -33,6 +32,7 @@ local themes = {
   fluoromachine = 'plugins.themes.fluoromachine',
   makurai = 'plugins.themes.makurai',
   rose_pine = 'plugins.themes.rose-pine',
+  gruvbox = 'plugins.themes.gruvbox',
 }
 
 -- Setup plugins
@@ -51,7 +51,7 @@ require('lazy').setup({
   require 'plugins.lsp',
   require 'plugins.autocompletion',
   -- require 'plugins.none-ls',
-  require 'plugins.copilot',
+  -- require 'plugins.copilot',
   require 'plugins.lualine',
   require 'plugins.indent-blankline',
   require 'plugins.bufferline',
