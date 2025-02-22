@@ -5,12 +5,13 @@ return {
   config = function()
     require('catppuccin').setup {
       background = { light = 'latte', dark = 'macchiato' }, -- latte, frappe, macchiato, mocha
+      transparent_background = true, 
       dim_inactive = {
         enabled = false,
         -- Dim inactive splits/windows/buffers.
         -- NOT recommended if you use old palette (a.k.a., mocha).
         shade = 'dark',
-        percentage = 0.15,
+        percentage = 0,
       },
       show_end_of_buffer = false, -- show the '~' characters after the end of buffers
       term_colors = true,

@@ -133,8 +133,6 @@ return { -- LSP Configuration & Plugins
           },
         },
       },
-      dockerls = {},
-      docker_compose_language_service = {},
       pylsp = {
         settings = {
           pylsp = {
@@ -195,28 +193,19 @@ return { -- LSP Configuration & Plugins
           },
         },
       },
-      rust_analyzer = {
-        ['rust-analyzer'] = {
-          cargo = {
-            features = 'all',
-          },
-          checkOnSave = true,
-          check = {
-            command = 'clippy',
-          },
-        },
-      },
-      tailwindcss = {},
       jsonls = {},
       sqlls = {},
       terraformls = {},
       yamlls = {},
-      clangd = {},
       bashls = {},
-      graphql = {},
-      cssls = {},
-      ltex = {},
-      texlab = {},
+      dockerls = {},
+      docker_compose_language_service = {},
+      -- tailwindcss = {},
+      -- graphql = {},
+      -- html = { filetypes = { 'html', 'twig', 'hbs' } },
+      -- cssls = {},
+      -- ltex = {},
+      -- texlab = {},
     }
 
     -- Ensure the servers and tools above are installed
