@@ -51,7 +51,7 @@ require('lazy').setup({
   require 'plugins.lsp',
   require 'plugins.autocompletion',
   -- require 'plugins.none-ls',
-  -- require 'plugins.copilot',
+  require 'plugins.copilot',
   require 'plugins.lualine',
   require 'plugins.indent-blankline',
   require 'plugins.bufferline',
@@ -70,6 +70,7 @@ require('lazy').setup({
   require 'plugins.noise',
   require 'plugins.copilot-chat',
   require 'plugins.themery',
+  require 'plugins.smear',
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
