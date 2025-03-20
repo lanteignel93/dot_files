@@ -167,3 +167,5 @@ alias obs='xdg-open "obsidian://open?vault=Personal" &'
 NVIM_THEME="gruvbox"
 alias leet="nvim leetcode.nvim"
 alias countlnpy='find -type f -name "*.py" | xargs wc -l'
+alias mute='amixer -D pulse sset Master mute'
+alias unmute='amixer -D pulse sset Master unmute'
