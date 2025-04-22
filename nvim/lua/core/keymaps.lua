@@ -87,6 +87,12 @@ vim.keymap.set('i', 'kj', '<ESC>', opts)
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
 
+-- Automatically add semicolon or comma at the end of the line in INSERT and NORMAL modes
+vim.keymap.set("i", ";;", "<ESC>A;")
+vim.keymap.set("i", ",,", "<ESC>A,")
+vim.keymap.set("n", ";;", "A;<ESC>")
+vim.keymap.set("n", ",,", "A,<ESC>")
+
 -- Move lines of text up and down
 -- Normal Mode
 vim.keymap.set("n", "<C-Down>", ":m .+1<CR>==")
