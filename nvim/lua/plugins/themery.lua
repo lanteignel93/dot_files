@@ -5,11 +5,11 @@ return {
       require("themery").setup({
         themes = {
         "gruvbox-material",
-        "onedark",
-        "tokyodark",
-        "nord",
         "catppuccin",
         "kanagawa",
+        "tokyodark",
+        "onedark",
+        "nord",
         "miasma",
         "eldritch",
         "fluoromachine",

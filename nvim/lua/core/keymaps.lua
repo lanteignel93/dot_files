@@ -38,6 +38,9 @@ vim.keymap.set('n', '<C-a>', 'gg<S-v>G', opts)
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
+-- Copy Line and Comment out 
+vim.keymap.set('n', 'ycc', 'yygccp', {remap = true})
+
 -- Resize with arrows
 vim.keymap.set('n', '<Up>', ':resize -2<CR>', opts)
 vim.keymap.set('n', '<Down>', ':resize +2<CR>', opts)
@@ -84,9 +87,16 @@ vim.keymap.set('i', 'kj', '<ESC>', opts)
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
 
--- Move text up and down
-vim.keymap.set('v', '<A-j>', ':m .+1<CR>==', opts)
-vim.keymap.set('v', '<A-k>', ':m .-2<CR>==', opts)
+-- Move lines of text up and down
+-- Normal Mode
+vim.keymap.set("n", "<C-Down>", ":m .+1<CR>==")
+vim.keymap.set("n", "<C-Up>", ":m .-2<CR>==")
+-- Insert Mode
+vim.keymap.set("i", "<C-Down>", "<esc>:m .+1<CR>==gi")
+vim.keymap.set("i", "<C-Up>", "<esc>:m .-2<CR>==gi")
+-- Visual Mode
+vim.keymap.set("v", "<C-Down>", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "<C-Up>", ":m '<-2<CR>gv=gv")
 
 -- Keep last yanked when pasting
 vim.keymap.set('v', 'p', '"_dP', opts)
