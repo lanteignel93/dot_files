@@ -95,14 +95,14 @@ vim.keymap.set("n", ",,", "A,<ESC>")
 
 -- Move lines of text up and down
 -- Normal Mode
-vim.keymap.set("n", "<C-Down>", ":m .+1<CR>==")
-vim.keymap.set("n", "<C-Up>", ":m .-2<CR>==")
+vim.keymap.set("n", "<A-j>", ":m .+1<CR>==")
+vim.keymap.set("n", "<A-k>", ":m .-2<CR>==")
 -- Insert Mode
-vim.keymap.set("i", "<C-Down>", "<esc>:m .+1<CR>==gi")
-vim.keymap.set("i", "<C-Up>", "<esc>:m .-2<CR>==gi")
+vim.keymap.set("i", "<A-j>", "<esc>:m .+1<CR>==gi")
+vim.keymap.set("i", "<A-k>", "<esc>:m .-2<CR>==gi")
 -- Visual Mode
-vim.keymap.set("v", "<C-Down>", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "<C-Up>", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
 
 -- Keep last yanked when pasting
 vim.keymap.set('v', 'p', '"_dP', opts)
