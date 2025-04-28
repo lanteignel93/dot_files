@@ -169,3 +169,34 @@ alias leet="nvim leetcode.nvim"
 alias countlnpy='find -type f -name "*.py" | xargs wc -l'
 alias mute='amixer -D pulse sset Master mute'
 alias unmute='amixer -D pulse sset Master unmute'
+
+notify_phone() {
+  # Check if a message argument was provided
+  if [ -z "$1" ]; then
+    echo "Usage: notify_phone \"Your message here\""
+    return 1 # Return an error code if no message is given
+  fi
+
+  # Assign the first argument (the message) to a variable for clarity
+  local message="$1"
+
+
+  # The ntfy.sh topic URL
+  local ntfy_topic="ntfy.sh/laurent-phone-to-computer-182764129"
+
+  # Use curl to send the message as POST data (-d) to the ntfy topic
+  # -s makes curl silent (no progress meter)
+  echo "Sending notification: \"${message}\" to ${ntfy_topic}"
+  curl -s -d "${message}" "${ntfy_topic}"
+
+  # Check the exit status of curl
+  if [ $? -eq 0 ]; then
+    echo "Notification sent successfully."
+  else
+    echo "Error sending notification."
+    return 1 # Return an error code if curl failed
+  fi
+
+  return 0 # Return success
+}
+
