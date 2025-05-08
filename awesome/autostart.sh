@@ -5,5 +5,6 @@ run() {
         "$@" &
     fi
 }
+run "xrandr" --output DP-2 --right-of HDMI-1 
 run "nitrogen" --restore
 run "compton"

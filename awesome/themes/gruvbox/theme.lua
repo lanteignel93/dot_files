@@ -22,6 +22,8 @@ local bg_purple = "#b16286"
 local bg_aqua = "#689d6a"
 local bg_gray = "#a89984"
 local bg_orange = "#d65d0e"
+local bg_cyan = "#5eeeaf"
+local bg_lavender = "#e5ccff"
 
 -- Foreground colors
 local fg = "#ebdbb2"
@@ -33,6 +35,7 @@ local fg_purple = "#d3869b"
 local fg_aqua = "#8ec07c"
 local fg_gray = "#928374"
 local fg_orange = "#fe8019"
+
 
 theme.font = "sans 10"
 
@@ -48,9 +51,11 @@ theme.fg_urgent = fg_purple
 theme.fg_minimize = fg
 
 theme.useless_gap = dpi(0)
-theme.border_width = dpi(4)
-theme.border_normal = bg_blue
-theme.border_focus = bg_yellow
+theme.border_width = dpi(3)
+-- theme.border_normal = bg_blue
+theme.border_normal = bg_lavender
+-- theme.border_focus = bg_yellow
+theme.border_focus = bg_cyan
 theme.border_marked = bg_red
 
 -- There are other variable sets

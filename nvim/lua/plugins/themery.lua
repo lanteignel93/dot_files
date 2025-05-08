@@ -15,6 +15,7 @@ return {
         "fluoromachine",
         "rose-pine",
         "makurai",
+        "darkvoid"
         },
       })
     end

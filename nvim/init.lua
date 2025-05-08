@@ -33,6 +33,7 @@ local themes = {
   makurai = 'plugins.themes.makurai',
   rose_pine = 'plugins.themes.rose-pine',
   gruvbox = 'plugins.themes.gruvbox',
+  darkvoid = 'plugins.themes.darkvoid',
 }
 
 -- Setup plugins
@@ -115,3 +116,4 @@ end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+vim.cmd.colorscheme 'darkvoid'
