@@ -53,7 +53,7 @@ require('lazy').setup({
   require 'plugins.autocompletion',
   require 'plugins.flash',
   require 'plugins.mini-files',
-  -- require 'plugins.mini-surround',
+  require 'plugins.mini-surround',
   -- require 'plugins.blink-cmp',
   require 'plugins.lualine',
   require 'plugins.indent-blankline',
