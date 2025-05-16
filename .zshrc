@@ -199,4 +199,4 @@ notify_phone() {
 
   return 0 # Return success
 }
-
+export PYTHONBREAKPOINT="ipdb.set_trace"
