@@ -4,9 +4,7 @@ return {
   build = ':TSUpdate',
   dependencies = {
     'nvim-treesitter/nvim-treesitter-textobjects',
-    -- RECOMMENDED PLUGINS
-    'nvim-treesitter/nvim-ts-autotag',
-    -- 'windwp/nvim-ts-context-commentstring',
+    'JoosepAlviste/nvim-ts-context-commentstring',
     'hiphish/rainbow-delimiters.nvim',
   },
   config = function()

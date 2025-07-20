@@ -38,6 +38,7 @@ require('lazy').setup({
 	require 'plugins.cmp',           -- Autocomplete
 	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
 	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
+	require 'plugins.dap',           -- Debugger
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the

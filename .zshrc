@@ -201,3 +201,23 @@ notify_phone() {
 }
 export PYTHONBREAKPOINT="ipdb.set_trace"
 source "$HOME/.p10k.zsh"
+#
+# Start and manage ssh-agent automatically
+#
+local agent_env_file="$XDG_RUNTIME_DIR/ssh-agent.env"
+
+# Source the agent's environment file if it exists
+if [[ -f "$agent_env_file" ]]; then
+  source "$agent_env_file" >/dev/null
+fi
+
+# If we can't connect to the agent, start a new one.
+# `ssh-add -l` returns an error if it cannot connect.
+if ! ssh-add -l >/dev/null; then
+  # Remove the old, invalid environment file
+  rm -f "$agent_env_file"
+  # Start a new agent and write its info to the file
+  ssh-agent > "$agent_env_file"
+  # Source the new environment file
+  source "$agent_env_file" >/dev/null
+fi

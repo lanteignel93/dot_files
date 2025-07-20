@@ -52,7 +52,8 @@ return { -- LSP Configuration & Plugins
     local servers = {
       'lua_ls',
       'pylsp',
-      'ruff_lsp',
+      'ruff',
+      -- 'ruff_lsp',
       'jsonls',
       'sqlls',
       'terraformls',
