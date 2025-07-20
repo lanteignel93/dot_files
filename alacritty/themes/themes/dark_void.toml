@@ -1,0 +1,45 @@
+# Alacritty Theme: darkvoid
+# Based on your custom Neovim theme
+
+[colors]
+# Default colors
+[colors.primary]
+background = "#0d0d0d"
+foreground = "#c0c0c0"
+
+# Cursor colors
+[colors.cursor]
+text = "#1c1c1c"
+cursor = "#bdfe58"
+
+# Normal colors
+[colors.normal]
+black = "#1c1c1c"
+red = "#dea6a0"
+green = "#5EEEAF"
+yellow = "#ffffba" # from your gitsigns 'changed' color
+blue = "#99CCFF"
+magenta = "#E5CCFF"
+cyan = "#7fa1c3"   # from your lsp 'info' color
+white = "#c0c0c0"
+
+# Bright colors
+[colors.bright]
+black = "#585858"
+red = "#dea6a0"
+green = "#bdfe58"
+yellow = "#ffffba"
+blue = "#99CCFF"
+magenta = "#E5CCFF"
+cyan = "#7fa1c3"
+white = "#f1f1f1"
+
+[font]
+# You can keep your existing font settings, this is just an example
+# family = "JetBrainsMono Nerd Font"
+# style = "Regular"
+size = 14.0
+
+[window]
+# Example opacity, adjust as you like
+opacity = 0.95

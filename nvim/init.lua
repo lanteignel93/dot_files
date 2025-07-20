@@ -1,4 +1,4 @@
--- 0. Setup all my non-plugins configs,
+-- 0. Setup all my non-plugins configs,1c1c1c"
 require 'core.keymaps'  -- Load general keymaps
 require 'core.options'  -- Load general options
 require 'core.snippets' -- Custom code snippets

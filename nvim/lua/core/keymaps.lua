@@ -38,8 +38,8 @@ vim.keymap.set('n', '<C-a>', 'gg<S-v>G', opts)
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
--- Copy Line and Comment out 
-vim.keymap.set('n', 'ycc', 'yygccp', {remap = true})
+-- Copy Line and Comment out
+vim.keymap.set('n', 'ycc', 'yygccp', { remap = true })
 
 -- Resize with arrows
 vim.keymap.set('n', '<Up>', ':resize -2<CR>', opts)
@@ -73,7 +73,7 @@ vim.keymap.set('n', '<leader>tx', ':tabclose<CR>', opts)  -- close current tab
 vim.keymap.set('n', '<leader>tn', ':tabn<CR>', opts)      --  go to next tab
 vim.keymap.set('n', '<leader>tp', ':tabp<CR>', opts)      --  go to previous tab
 
-vim.keymap.set('n', '<leader>x', ':Bdelete!<CR>', opts)   -- close buffer
+vim.keymap.set('n', '<leader>x', ':bdelete!<CR>', opts)   -- close buffer
 vim.keymap.set('n', '<leader>b', '<cmd> enew <CR>', opts) -- new buffer
 
 -- toggle line wrapping
