@@ -11,6 +11,7 @@ return {
     -- Set up rainbow delimiters
     -- This must be done BEFORE the main treesitter config
     require('rainbow-delimiters.setup').setup()
+    require('ts_context_commentstring').setup()
 
     -- Enable context-aware commenting
     vim.g.skip_ts_context_commentstring_module = true
@@ -45,11 +46,11 @@ return {
       },
 
       -- Enable `nvim-ts-context-commentstring` for context-aware commenting
-      context_commentstring = {
-        enable = true,
-        enable_autocmd = false,
-      },
-
+      -- context_commentstring = {
+      --   enable = true,
+      --   enable_autocmd = false,
+      -- },
+      --
       incremental_selection = {
         enable = true,
         keymaps = {

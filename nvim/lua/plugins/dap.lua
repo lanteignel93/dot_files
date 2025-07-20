@@ -46,12 +46,12 @@ return {
         },
         {
           elements = {
-            { id = "repl", size = 1 },
+            { id = "repl",    size = 0.5 },
+            { id = "console", size = 0.5 },
           },
-          size = 10,
+          size = 20,
           position = "bottom",
-        },
-      },
+        }, },
       highlights = {
         expand_arrow = "Comment",
         current_line = "CursorLine",
