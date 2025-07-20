@@ -124,14 +124,14 @@ source $ZSH/oh-my-zsh.sh
 #    fi
 #}
 
-#setopt PROMPT_SUBST PROMPT_PERCENT
+setopt PROMPT_SUBST PROMPT_PERCENT
 
 # Display a "we are in a virtualenv" indicator that works in child shells too
 #VIRTUAL_ENV_DISABLE_PROMPT=1
 #RPS1='$(zsh_virtualenv_prompt)'#
 #
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
+#typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
@@ -149,9 +149,9 @@ alias tell="whoami; hostname; pwd"
 alias dir="ls -l | grep ^d" 
 alias d="df -h | awk '{print \$6}' | cut -c1-4"
 alias onedrivesync="rclone --vfs-cache-mode writes mount OneDrive: ~/OneDrive &"
-export PATH="$PATH:/opt/nvim-linux64/bin"
-alias vim="/usr/bin/nvim"
-alias v="/usr/bin/nvim"
+export PATH="$PATH:/opt/nvim/bin"
+alias vim="/usr/local/bin/nvim"
+alias v="/usr/local/bin/nvim"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completioni
@@ -164,7 +164,7 @@ alias dots=~/scripts/dotfiles.sh
 alias obs_update=~/scripts/git_obsidian.sh
 alias obs='xdg-open "obsidian://open?vault=Personal" &'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-NVIM_THEME="gruvbox"
+NVIM_THEME="darkvoid"
 alias leet="nvim leetcode.nvim"
 alias countlnpy='find -type f -name "*.py" | xargs wc -l'
 alias mute='amixer -D pulse sset Master mute'
@@ -200,3 +200,4 @@ notify_phone() {
   return 0 # Return success
 }
 export PYTHONBREAKPOINT="ipdb.set_trace"
+source "$HOME/.p10k.zsh"

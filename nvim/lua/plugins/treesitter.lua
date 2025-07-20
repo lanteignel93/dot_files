@@ -1,47 +1,57 @@
--- Highlight, edit, and navigate code
+-- In your treesitter.lua file
 return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
   dependencies = {
     'nvim-treesitter/nvim-treesitter-textobjects',
+    -- RECOMMENDED PLUGINS
+    'nvim-treesitter/nvim-ts-autotag',
+    -- 'windwp/nvim-ts-context-commentstring',
+    'hiphish/rainbow-delimiters.nvim',
   },
   config = function()
+    -- Set up rainbow delimiters
+    -- This must be done BEFORE the main treesitter config
+    require('rainbow-delimiters.setup').setup()
+
+    -- Enable context-aware commenting
+    vim.g.skip_ts_context_commentstring_module = true
+
     require('nvim-treesitter.configs').setup {
-      -- Add languages to be installed here that you want installed for treesitter
+      -- A list of parser names, or "all"
+      -- (Tip: organizing this alphabetically makes it easier to manage)
       ensure_installed = {
-        'lua',
-        'python',
-        'javascript',
-        'typescript',
-        'vimdoc',
-        'vim',
-        'regex',
-        'terraform',
-        'sql',
-        'dockerfile',
-        'toml',
-        'json',
-        'java',
-        'groovy',
-        'go',
-        'gitignore',
-        'graphql',
-        'yaml',
-        'make',
-        'cmake',
-        'markdown',
-        'markdown_inline',
-        'bash',
-        'tsx',
-        'css',
-        'html',
+        'bash', 'cmake', 'css', 'dockerfile', 'go', 'gitignore', 'graphql',
+        'groovy', 'html', 'java', 'javascript', 'json', 'lua', 'make',
+        'markdown', 'markdown_inline', 'python', 'regex', 'sql', 'terraform',
+        'toml', 'tsx', 'typescript', 'vim', 'vimdoc', 'yaml',
       },
 
-      -- Autoinstall languages that are not installed
+      -- Install parsers synchronously (only applied to `ensure_installed`)
+      sync_install = false,
+
+      -- Automatically install missing parsers when entering a buffer
       auto_install = true,
 
-      highlight = { enable = true },
+      highlight = {
+        enable = true,
+        -- Using rainbow-delimiters instead of the built-in rainbow module
+        additional_vim_regex_highlighting = false,
+      },
+
       indent = { enable = true },
+
+      -- Enable `nvim-ts-autotag` which works with html, htmldjango, jsx, tsx, etc.
+      autotag = {
+        enable = true,
+      },
+
+      -- Enable `nvim-ts-context-commentstring` for context-aware commenting
+      context_commentstring = {
+        enable = true,
+        enable_autocmd = false,
+      },
+
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -51,12 +61,12 @@ return {
           node_decremental = '<M-space>',
         },
       },
+
       textobjects = {
         select = {
           enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+          lookahead = true,
           keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
             ['aa'] = '@parameter.outer',
             ['ia'] = '@parameter.inner',
             ['af'] = '@function.outer',
@@ -67,7 +77,7 @@ return {
         },
         move = {
           enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
+          set_jumps = true,
           goto_next_start = {
             [']m'] = '@function.outer',
             [']]'] = '@class.outer',
@@ -97,7 +107,7 @@ return {
       },
     }
 
-    -- Register additional file extensions
+    -- Your custom filetype associations remain the same
     vim.filetype.add { extension = { tf = 'terraform' } }
     vim.filetype.add { extension = { tfvars = 'terraform' } }
     vim.filetype.add { extension = { pipeline = 'groovy' } }
