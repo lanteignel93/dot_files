@@ -7,6 +7,9 @@ return {
     'LazyGitFilter',
     'LazyGitFilterCurrentFile',
   },
+  keys = {
+    { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'Open LazyGit' },
+  },
   dependencies = {
     'nvim-lua/plenary.nvim',
   },
@@ -30,9 +33,14 @@ return {
       -- Set the background highlight to NONE just before opening
       vim.api.nvim_set_hl(0, 'LazyGitFloat', { bg = 'NONE' })
       -- Open LazyGit
+      print("Attempting to open LazyGit...") -- Add this line for verification
       require('lazygit').open()
     end
 
-    vim.keymap.set('n', '<leader>lg', open_lazygit_transparent, { desc = 'LazyGit' })
+    -- Ensure the keymap is set AFTER the setup of lazygit
+    vim.schedule(function()
+      vim.keymap.set('n', '<leader>lg', open_lazygit_transparent, { desc = 'LazyGit' })
+      print("LazyGit keymap <leader>lg set") -- Add this line to confirm keymap setting
+    end)
   end,
 }
