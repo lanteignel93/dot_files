@@ -37,6 +37,7 @@ require('lazy').setup({
 	require 'plugins.snacks',        -- Fuzzy Finder
 	require 'plugins.cmp',           -- Autocomplete
 	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
+	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the
