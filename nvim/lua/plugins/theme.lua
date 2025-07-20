@@ -46,7 +46,7 @@ return {
 
                     -- Plugin-specific colors
                     border = "#585858", -- Telescope border
-                    title = "#bdfe58", -- Telescope title
+                    title = "#bdfe58",  -- Telescope title
                     bufferline_selection = "#1bfd9c",
 
                     -- LSP Diagnostics

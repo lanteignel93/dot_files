@@ -22,6 +22,7 @@
   local darkvoid_lavender='#E5CCFF'
   local darkvoid_light_blue='#99CCFF'
   local darkvoid_red='#dea6a0'
+  local darkvoid_darkred='#FD2222'
   local darkvoid_comment='#585858'
   # -------------------------------------------------------------------
 
@@ -76,9 +77,9 @@
   typeset -g POWERLEVEL9K_VCS_FOREGROUND="$darkvoid_sea_green"
   typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND="$darkvoid_sea_green"
   typeset -g POWERLEVEL9K_VCS_STAGED_FOREGROUND="$darkvoid_lavender"
-  typeset -g POWERLEVEL9K_VCS_UNSTAGED_FOREGROUND="$darkvoid_red"
+  typeset -g POWERLEVEL9K_VCS_UNSTAGED_FOREGROUND="$darkvoid_darkred"
   typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND="$darkvoid_sea_green"
-  typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND="$darkvoid_red"
+  typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND="$darkvoid_darkred"
   typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR="$darkvoid_sea_green"
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='\uF126 '
   typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
@@ -89,7 +90,7 @@
   typeset -g POWERLEVEL9K_STATUS_OK=false
   typeset -g POWERLEVEL9K_STATUS_ERROR=true
   typeset -g POWERLEVEL9K_STATUS_ERROR_VISUAL_IDENTIFIER_EXPANSION='✘'
-  typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND="$darkvoid_red"
+  typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND="$darkvoid_darkred"
   typeset -g POWERLEVEL9K_STATUS_ERROR_BACKGROUND=''
 
   ###################[ command_execution_time: duration of the last command ]###################
