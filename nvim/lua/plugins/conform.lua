@@ -8,6 +8,7 @@ return {
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'ruff_format', 'black' }, -- Uses ruff first, then black
+        cpp = { 'clang-format' },
         javascript = { 'prettierd' },
         typescript = { 'prettierd' },
         tsx = { 'prettierd' },

@@ -1,13 +1,30 @@
 return {
     "kawre/leetcode.nvim",
-    -- build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
+    build = ":TSUpdate html", -- Recommended if you have nvim-treesitter
     dependencies = {
-        -- include a picker of your choice, see picker section for more details
         "nvim-telescope/telescope.nvim",
         "nvim-lua/plenary.nvim",
         "MunifTanjim/nui.nvim",
     },
     opts = {
-        lang = 'cpp'
+        -- This sets the default language when you open the plugin
+        lang = "cpp",
+
+        -- This table holds settings FOR EACH language
+        languages = {
+            cpp = {
+                -- Add this format table to control clang-format
+                format = {
+                    style = {
+                        BasedOnStyle = "LLVM",
+                        IndentWidth = 4,
+                        TabWidth = 4,
+                        UseTab = "Never",
+                    },
+                },
+            },
+            -- You could add configs for other languages here
+            -- python = { ... },
+        },
     },
 }

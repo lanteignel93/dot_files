@@ -60,6 +60,7 @@ return { -- LSP Configuration & Plugins
       'yamlls',
       'bashls',
       'dockerls',
+      'clangd'
     }
 
     -- Server-specific settings
