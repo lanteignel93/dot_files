@@ -12,14 +12,14 @@ args = ["-l"]
 TERM = "xterm-256color"
 
 [font]
-size = 10.0
+size = 8.0
 normal = { family = "JetBrainsMonoNL Nerd Font", style="Normal"}
 #[font.normal]
 #family = "JetBrainsMono NFM"
 
 [window]
 startup_mode = "Windowed"
-dynamic_padding = true
+# dynamic_padding = true
 opacity = 0.95
 blur = true
 decorations = "Full"
