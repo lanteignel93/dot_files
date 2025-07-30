@@ -33,7 +33,7 @@ require('lazy').setup({
 	require 'plugins.treesitter',    -- Turn source code into a detailed, structured tree.
 	require 'plugins.noice',         -- Plugin that completely replaces the UI for messages, cmdline and the popupmenu
 	require 'plugins.lsp',           -- Language Server Protocol
-	-- require 'plugins.conform',       -- Lightweight yet powerful formatter plugin for Neovim
+	require 'plugins.conform',       -- Lightweight yet powerful formatter plugin for Neovim
 	require 'plugins.snacks',        -- Fuzzy Finder
 	require 'plugins.cmp',           -- Autocomplete
 	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
