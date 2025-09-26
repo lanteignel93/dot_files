@@ -221,3 +221,4 @@ if ! ssh-add -l >/dev/null; then
   # Source the new environment file
   source "$agent_env_file" >/dev/null
 fi
+alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
