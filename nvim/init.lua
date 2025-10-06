@@ -37,8 +37,12 @@ require('lazy').setup({
 	require 'plugins.snacks',        -- Fuzzy Finder
 	require 'plugins.cmp',           -- Autocomplete
 	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
+	require 'plugins.note',          -- Note taking plugin
+	require 'plugins.markview',      -- Markdown Rendering
+	require 'plugins.bullet',        -- Makes automating list easier
 	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
 	require 'plugins.dap',           -- Debugger
+	require 'plugins.scooter',       -- Find and Replace text in Neovim
 	-- More plugins below, continue to add each plugin individually
 }, {
 	ui = {
