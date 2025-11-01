@@ -222,3 +222,5 @@ if ! ssh-add -l >/dev/null; then
   source "$agent_env_file" >/dev/null
 fi
 alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
+# Explicitly source Kitty's shell integration for Zsh
+source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh

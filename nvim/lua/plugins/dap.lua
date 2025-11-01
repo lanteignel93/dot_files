@@ -1,30 +1,39 @@
 return {
+  -- 1. nvim-dap-python: Separated to apply the LuaRocks fix AND isolate setup
+  {
+    "mfussenegger/nvim-dap-python",
+    -- Remove redundant dependencies here, keep it clean
+    opts = {
+      rocks = {
+        enabled = false,
+      },
+    },
+    -- New: Isolate the setup call here.
+    config = function()
+      -- This ensures dap-python is configured right after it is loaded.
+      require("dap-python").setup()
+    end,
+  },
+
+  -- 2. MAIN DAP BLOCK
   "mfussenegger/nvim-dap",
   dependencies = {
-    -- Corrected the plugin name here 👇
     "jay-babu/mason-nvim-dap.nvim",
-
-    -- REMOVED the config from here, it will be done in the main config block
     "rcarriga/nvim-dap-ui",
-
-    -- This is a dependency for nvim-dap-ui, so it's good to have.
-    "nvim-neotest/nvim-nio",
-
-    -- This is a dependency for Python DAP
-    "mfussenegger/nvim-dap-python",
+    "nvim-neotest/nvim-nio", -- dependency for dap-ui/dap
   },
   config = function()
-    -- Everything is now inside ONE config function
     local dap = require("dap")
     local dapui = require("dapui")
 
-    -- 👇 ADD THIS BLOCK TO DEFINE CUSTOM SIGNS AND HIGHLIGHTS
-    vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fa1100" }) -- Your darkvoid_red color
-    vim.api.nvim_set_hl(0, "DapStopped", { fg = "#bdfe58" })    -- Your darkvoid_lime color
+    -- Define custom signs and highlights (Theme: dark_void)
+    vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fa1100" })
+    vim.api.nvim_set_hl(0, "DapStopped", { fg = "#bdfe58" })
 
     vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
     vim.fn.sign_define("DapStopped", { text = "→", texthl = "DapStopped", linehl = "CursorLine", numhl = "" })
-    require('dap-python').setup()
+
+    -- !!! REMOVED: require('dap-python').setup() - Redundant with mason-nvim-dap
 
     -- 1. Configure mason-nvim-dap
     require("mason-nvim-dap").setup({
@@ -32,7 +41,7 @@ return {
       automatic_installation = true,
     })
 
-    -- 2. Configure nvim-dap-ui (moved from its own config block)
+    -- 2. Configure nvim-dap-ui
     dapui.setup({
       layouts = {
         {
@@ -51,17 +60,17 @@ return {
           },
           size = 20,
           position = "bottom",
-        }, },
+        },
+      },
       highlights = {
         expand_arrow = "Comment",
         current_line = "CursorLine",
-        breakpoint = { fg = "#dea6a0" }, -- darkvoid_red
-        stopped = { fg = "#bdfe58" },    -- darkvoid_lime
+        breakpoint = { fg = "#dea6a0" },
+        stopped = { fg = "#bdfe58" },
       },
     })
 
-    -- 3. Setup DAP Listeners to integrate with the UI
-    -- This MUST come after dapui.setup()
+    -- 3. Setup DAP Listeners
     dap.listeners.after.event_initialized["dapui_config"] = function()
       dapui.open()
     end
@@ -73,25 +82,6 @@ return {
     end
 
     -- 4. Define your adapters and configurations
-    -- This part of your config was already correct!
-    -- dap.adapters.python = {
-    --   type = "executable",
-    --   command = vim.fn.exepath("python"), -- Using exepath is more robust
-    --   args = { "-m", "debugpy.adapter" },
-    -- }
-    --
-    -- dap.configurations.python = {
-    --   {
-    --     type = "python",
-    --     request = "launch",
-    --     name = "Launch file",
-    --     program = "${file}",
-    --     pythonPath = function()
-    --       return vim.fn.exepath("python")
-    --     end,
-    --   },
-    -- }
-
     dap.configurations.cpp = {
       {
         name = "Launch file",
