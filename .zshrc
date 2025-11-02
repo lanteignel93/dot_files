@@ -224,3 +224,4 @@ fi
 alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
 # Explicitly source Kitty's shell integration for Zsh
 source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
+export PATH=$PATH:/home/laurent/.spicetify
