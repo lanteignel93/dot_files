@@ -25,7 +25,6 @@ require('lazy').setup({
 	require 'plugins.gitsigns',      -- Git Signs when changing from latest git repo where numbers are
 	require 'plugins.comment',       -- Plugin to comment and uncomment lines
 	require 'plugins.mini-files',    -- File Explorer
-	-- require 'plugins.mini-indentscope', -- Dynamic indenting
 	require 'plugins.indent-blankline', -- Indentation guides to NeoVim
 	require 'plugins.alpha',         -- Cool Logo
 	require 'plugins.smear',         -- Cursor movement more visible
@@ -37,13 +36,11 @@ require('lazy').setup({
 	require 'plugins.snacks',        -- Fuzzy Finder
 	require 'plugins.cmp',           -- Autocomplete
 	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
-	require 'plugins.note',          -- Note taking plugin
 	require 'plugins.markview',      -- Markdown Rendering
 	require 'plugins.bullet',        -- Makes automating list easier
 	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
 	require 'plugins.dap',           -- Debugger
 	require 'plugins.scooter',       -- Find and Replace text in Neovim
-	-- More plugins below, continue to add each plugin individually
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the
