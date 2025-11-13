@@ -41,6 +41,7 @@ require('lazy').setup({
 	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
 	require 'plugins.dap',           -- Debugger
 	require 'plugins.scooter',       -- Find and Replace text in Neovim
+	require 'plugins.obsidian',      -- Obsidian Linker plugin
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the
