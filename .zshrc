@@ -225,3 +225,26 @@ alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
 # Explicitly source Kitty's shell integration for Zsh
 source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
 export PATH=$PATH:/home/laurent/.spicetify
+
+# Function to run the Aleph Agent securely inside its virtual environment.
+function aleph() {
+    # Get the absolute path to the project root (adjust if running from another location)
+    local project_root="/home/laurent/git_projects/ai_agent_v1"
+    
+    # Check for the virtual environment directory
+    if [ ! -d "$project_root/venv" ]; then
+        echo "Error: Virtual environment not found at $project_root/venv"
+        echo "Please navigate to the project root or adjust 'project_root' path."
+        return 1
+    fi
+
+    # Activate the environment
+    source "$project_root/venv/bin/activate"
+
+    # Execute the console script command defined in pyproject.toml
+    echo "--- Launching Aleph Agent ---"
+    python -m src.main
+    
+    # Deactivate the environment when the script exits
+    deactivate
+}
