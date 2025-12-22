@@ -1,4 +1,3 @@
--- 0. Setup all my non-plugins configs,1c1c1c"
 require 'core.keymaps'  -- Load general keymaps
 require 'core.options'  -- Load general options
 require 'core.snippets' -- Custom code snippets
@@ -19,29 +18,29 @@ vim.opt.rtp:prepend(lazypath)
 
 -- At first, this list will be empty. We will add plugins back one by one.
 require('lazy').setup({
-	require 'plugins.theme',         -- Theme
-	require 'plugins.lualine',       -- Status Bar at the bottom
-	require 'plugins.misc',          -- Autopairs, comments, indent-blankline...
-	require 'plugins.gitsigns',      -- Git Signs when changing from latest git repo where numbers are
-	require 'plugins.comment',       -- Plugin to comment and uncomment lines
-	require 'plugins.mini-files',    -- File Explorer
-	require 'plugins.indent-blankline', -- Indentation guides to NeoVim
-	require 'plugins.alpha',         -- Cool Logo
-	require 'plugins.smear',         -- Cursor movement more visible
-	require 'plugins.flash',         -- Navigate your code with search labels, enhanced character motions
-	require 'plugins.treesitter',    -- Turn source code into a detailed, structured tree.
-	require 'plugins.noice',         -- Plugin that completely replaces the UI for messages, cmdline and the popupmenu
-	require 'plugins.lsp',           -- Language Server Protocol
-	require 'plugins.conform',       -- Lightweight yet powerful formatter plugin for Neovim
-	require 'plugins.snacks',        -- Fuzzy Finder
-	require 'plugins.cmp',           -- Autocomplete
-	require 'plugins.leetcode',      -- Leetcode in NeoVim plugin
-	require 'plugins.markview',      -- Markdown Rendering
-	require 'plugins.bullet',        -- Makes automating list easier
-	require 'plugins.lazygit',       -- Lazygit plugin for NeoVim
-	require 'plugins.dap',           -- Debugger
-	require 'plugins.scooter',       -- Find and Replace text in Neovim
-	require 'plugins.obsidian',      -- Obsidian Linker plugin
+	{ import = 'plugins.theme' },
+	{ import = 'plugins.lualine' },
+	{ import = 'plugins.misc' },
+	{ import = 'plugins.gitsigns' },
+	{ import = 'plugins.comment' },
+	{ import = 'plugins.mini-files' },
+	{ import = 'plugins.indent-blankline' },
+	{ import = 'plugins.alpha' },
+	{ import = 'plugins.smear' },
+	{ import = 'plugins.flash' },
+	{ import = 'plugins.treesitter' },
+	{ import = 'plugins.noice' },
+	{ import = 'plugins.lsp' }, -- This will now load safely!
+	{ import = 'plugins.conform' },
+	{ import = 'plugins.snacks' },
+	{ import = 'plugins.cmp' },
+	{ import = 'plugins.leetcode' },
+	{ import = 'plugins.markview' },
+	{ import = 'plugins.bullet' },
+	{ import = 'plugins.lazygit' },
+	{ import = 'plugins.dap' },
+	{ import = 'plugins.scooter' },
+	{ import = 'plugins.obsidian' },
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the

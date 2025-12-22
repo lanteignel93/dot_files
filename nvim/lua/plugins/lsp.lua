@@ -1,43 +1,36 @@
-return { -- LSP Configuration & Plugins
+return {
   'neovim/nvim-lspconfig',
   dependencies = {
-    -- Core LSP tooling
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
-
-    -- nvim-cmp source for LSP
     'hrsh7th/cmp-nvim-lsp',
-
-    -- UI for LSP progress
     { 'j-hui/fidget.nvim', tag = 'v1.4.0', opts = {} },
-
-    -- Explicitly state all dependencies for this config
     'nvim-telescope/telescope.nvim',
-    'hrsh7th/nvim-cmp', -- ADDED: The missing dependency
+    'hrsh7th/nvim-cmp',
   },
   config = function()
-    -- This section adds custom icons for the diagnostic signs in the sign column.
+    -- 1. DIAGNOSTIC UI (Icons)
     local signs = { Error = ' ', Warn = ' ', Hint = ' ', Info = ' ' }
     for type, icon in pairs(signs) do
       local hl = 'DiagnosticSign' .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
 
-    -- This autocommand runs whenever an LSP client attaches to a buffer.
+    -- 2. SHARED ATTACH FUNCTION (Keymaps)
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('UserLspConfig', {}),
       callback = function(ev)
         local map = function(keys, func, desc)
           vim.keymap.set('n', keys, func, { buffer = ev.buf, desc = 'LSP: ' .. desc })
         end
+        local tb = require('telescope.builtin')
 
-        -- LSP & Diagnostic keymaps
-        map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-        map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-        map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-        map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-        map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-        map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+        map('gd', tb.lsp_definitions, '[G]oto [D]efinition')
+        map('gr', tb.lsp_references, '[G]oto [R]eferences')
+        map('gI', tb.lsp_implementations, '[G]oto [I]mplementation')
+        map('<leader>D', tb.lsp_type_definitions, 'Type [D]efinition')
+        map('<leader>ds', tb.lsp_document_symbols, '[D]ocument [S]ymbols')
+        map('<leader>ws', tb.lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
         map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
         map('K', vim.lsp.buf.hover, 'Hover Documentation')
@@ -48,67 +41,87 @@ return { -- LSP Configuration & Plugins
       end,
     })
 
-    -- List of servers to install with Mason
-    local servers = {
-      'lua_ls',
-      'pylsp',
-      'ruff',
-      -- 'ruff_lsp',
-      'jsonls',
-      'sqlls',
-      'terraformls',
-      'yamlls',
-      'bashls',
-      'dockerls',
-      'clangd'
-    }
-
-    -- Server-specific settings
-    local server_settings = {
-      lua_ls = {
-        settings = {
-          Lua = {
-            runtime = { version = 'LuaJIT' },
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-            diagnostics = {
-              globals = { 'vim' },
-            },
-          },
-        },
-      },
-      pylsp = {
-        settings = {
-          pylsp = {
-            plugins = {
-              pyflakes = { enabled = false },
-              pycodestyle = { enabled = false },
-              pylsp_mypy = { enabled = false },
-              pylsp_black = { enabled = true },
-            },
-          },
-        },
-      },
-    }
-
-    -- Initialize mason.nvim
+    -- 3. CORE SETUP
     require('mason').setup()
-
-    -- Get the capabilities table for nvim-cmp
     local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    capabilities.offsetEncoding = { 'utf-16' } -- Fixed the Clangd crash
 
-    -- Corrected setup for mason-lspconfig
-    require('mason-lspconfig').setup({
-      ensure_installed = servers,
-      handlers = {
-        -- This default handler runs for every server.
-        function(server_name)
-          require('lspconfig')[server_name].setup({
-            capabilities = capabilities,
-            settings = server_settings[server_name],
-          })
-        end,
+    -- 4. SERVER LIST & NATIVE CONFIGURATIONS
+    -- We define these natively to stop the "junk" stack traces
+    
+    -- CLANGD (The Fixed version)
+    vim.lsp.config('clangd', {
+      cmd = {
+        'clangd',
+        '--background-index',
+        '--clang-tidy',
+        '--header-insertion=iwyu',
+        '--completion-style=detailed',
+        '--query-driver=/usr/bin/g++,/usr/bin/c++',
+        '--compile-commands-dir=' .. vim.fn.getcwd(),
       },
+      root_dir = vim.fs.root(0, { 'compile_commands.json', '.git' }),
+      capabilities = capabilities,
+    })
+
+    -- LUA_LS
+    vim.lsp.config('lua_ls', {
+      settings = {
+        Lua = {
+          runtime = { version = 'LuaJIT' },
+          workspace = { checkThirdParty = false },
+          telemetry = { enable = false },
+          diagnostics = { globals = { 'vim' } },
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- PYLSP
+    vim.lsp.config('pylsp', {
+      settings = {
+        pylsp = {
+          plugins = {
+            pyflakes = { enabled = false },
+            pycodestyle = { enabled = false },
+            pylsp_black = { enabled = true },
+          },
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- 5. ENABLE SERVERS
+    local servers = { 
+      'clangd', 'lua_ls', 'pylsp', 'ruff', 'jsonls', 
+      'sqlls', 'terraformls', 'yamlls', 'bashls', 'dockerls' 
+    }
+
+    require('mason-lspconfig').setup({ ensure_installed = servers })
+
+    -- Start all servers using the native 0.11 engine
+    for _, server in ipairs(servers) do
+      vim.lsp.enable(server)
+    end
+
+    -- 6. FORMAT ON SAVE
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      group = vim.api.nvim_create_augroup('UserLspFormat', { clear = true }),
+      callback = function(args)
+        -- Only format if an LSP with formatting capability is attached
+        local clients = vim.lsp.get_clients({ bufnr = args.buf })
+        if #clients > 0 then
+          vim.lsp.buf.format({
+            bufnr = args.buf,
+            -- Use a 2000ms timeout for larger C++ files
+            timeout_ms = 2000,
+            -- Ensure it doesn't try to format with something like bashls if multiple attach
+            filter = function(client)
+              return client.name ~= "bashls" 
+            end,
+          })
+        end
+      end,
     })
   end,
 }

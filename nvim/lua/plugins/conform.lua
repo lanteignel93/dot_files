@@ -21,7 +21,7 @@ return {
       },
       -- This is the key part to enable format on save
       format_on_save = {
-        lsp_fallback = true, -- Fallback to LSP if a conform formatter isn't found
+        lsp_fallback = false, -- Fallback to LSP if a conform formatter isn't found
         timeout_ms = 500,
       },
     })
