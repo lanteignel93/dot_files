@@ -16,31 +16,30 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- At first, this list will be empty. We will add plugins back one by one.
 require('lazy').setup({
-	{ import = 'plugins.theme' },
-	{ import = 'plugins.lualine' },
-	{ import = 'plugins.misc' },
-	{ import = 'plugins.gitsigns' },
-	{ import = 'plugins.comment' },
-	{ import = 'plugins.mini-files' },
-	{ import = 'plugins.indent-blankline' },
-	{ import = 'plugins.alpha' },
-	{ import = 'plugins.smear' },
-	{ import = 'plugins.flash' },
-	{ import = 'plugins.treesitter' },
-	{ import = 'plugins.noice' },
-	{ import = 'plugins.lsp' }, -- This will now load safely!
-	{ import = 'plugins.conform' },
-	{ import = 'plugins.snacks' },
-	{ import = 'plugins.cmp' },
-	{ import = 'plugins.leetcode' },
-	{ import = 'plugins.markview' },
-	{ import = 'plugins.bullet' },
-	{ import = 'plugins.lazygit' },
-	{ import = 'plugins.dap' },
-	{ import = 'plugins.scooter' },
-	{ import = 'plugins.obsidian' },
+	{ import = 'plugins.theme' },         -- Colorscheme configuration
+	{ import = 'plugins.lualine' },       -- The status line bar at the bottom of the window
+	{ import = 'plugins.misc' },          -- Collection of small, uncategorized utilities
+	{ import = 'plugins.gitsigns' },      -- Git indicators (added/modified lines) in the sidebar gutter
+	{ import = 'plugins.comment' },       -- Easy commenting keymaps (usually 'gc' to toggle)
+	{ import = 'plugins.mini-files' },    -- A minimal, fast file explorer/tree
+	{ import = 'plugins.indent-blankline' }, -- Vertical lines guiding indentation levels
+	{ import = 'plugins.alpha' },         -- The startup dashboard/greeter screen
+	{ import = 'plugins.smear' },         -- Visual effect adding a "motion blur" trail to the cursor
+	{ import = 'plugins.flash' },         -- Fast navigation allowing you to jump to specific words
+	{ import = 'plugins.treesitter' },    -- Advanced syntax highlighting and code parsing
+	{ import = 'plugins.noice' },         -- Modernizes the UI for messages, command line, and popups
+	{ import = 'plugins.lsp' },           -- Language Server Protocol (Diagnostics, Go-to-Definition)
+	{ import = 'plugins.conform' },       -- Code formatter (auto-formats on save)
+	{ import = 'plugins.snacks' },        -- A bundle of "Quality of Life" tools (scratchpads, terminal, etc.)
+	{ import = 'plugins.cmp' },           -- The autocompletion dropdown menu engine
+	{ import = 'plugins.leetcode' },      -- Interface for solving LeetCode problems inside Neovim
+	{ import = 'plugins.markview' },      -- Renders Markdown (headings, tables) nicely directly in the buffer
+	{ import = 'plugins.bullet' },        -- Auto-formatting for bulleted lists (useful for notes)
+	{ import = 'plugins.lazygit' },       -- Integration for the LazyGit terminal interface
+	{ import = 'plugins.dap' },           -- Debug Adapter Protocol (for debugging code execution)
+	{ import = 'plugins.scooter' },       -- Your new "find and replace" TUI integration
+	{ import = 'plugins.obsidian' },      -- Integration for Obsidian vaults and daily notes
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the

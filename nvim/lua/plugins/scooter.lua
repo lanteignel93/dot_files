@@ -8,7 +8,7 @@ return {
   keys = {
     -- This calls a function we define in the 'config' block below.
     -- We use a custom namespace 'scooter_integration' to avoid polluting the global scope.
-    { '<leader>s', '<cmd>lua require("scooter_integration").open_default()<CR>', mode = 'n', desc = 'Open Scooter Finder' },
+    { '<leader>s', '<cmd>lua scooter_integration.open_default()<CR>', mode = 'n', desc = 'Open Scooter Finder' },
     -- The visual mode keymap is more complex (requires getreg) so it is defined inside 'config'.
   },
 
