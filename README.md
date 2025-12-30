@@ -1,6 +1,6 @@
 # .dotfiles
 
-> "Simplicity is the ultimate sophistication."
+> Efficiency is intelligent laziness." — David Dunham"
 
 Personal configuration files for my Linux workstation. 
 
