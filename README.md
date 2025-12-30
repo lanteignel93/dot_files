@@ -2,7 +2,7 @@
 
 > "Simplicity is the ultimate sophistication."
 
-Personal configuration files for my Linux workstation. This setup is built for a high-performance quantitative finance and development workflow, utilizing **AwesomeWM**, **Neovim**, and **Tmux** for a mouse-free experience.
+Personal configuration files for my Linux workstation. 
 
 ![My Rice](pictures/desktop.png)
 
@@ -37,7 +37,7 @@ My Neovim setup (`nvim/`) is designed for data science and low-latency coding:
     * **Fonts:** Custom fonts managed in `.fonts/` (Bricolage Grotesque / JetBrains Mono).
 
 ### Custom Color Theme 
-* Configured a personal theme based on `[darkvoid.nvim theme](https://github.com/darkvoid-theme/darkvoid.nvim)`
+* Configured a personal theme based on [darkvoid.nvim theme](https://github.com/darkvoid-theme/darkvoid.nvim)
 
 ## 📂 Structure
 
