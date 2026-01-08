@@ -6,7 +6,7 @@ Personal configuration files for my Linux workstation.
 
 ![My Rice](pictures/desktop.png)
 
-## ⚡ Core Stack
+## Core Stack
 
 | Component | Choice | Description |
 | :--- | :--- | :--- |
@@ -39,7 +39,7 @@ My Neovim setup (`nvim/`) is designed for data science and low-latency coding:
 ### Custom Color Theme 
 * Configured a personal theme based on [darkvoid.nvim theme](https://github.com/darkvoid-theme/darkvoid.nvim)
 
-## 📂 Structure
+## Structure
 
 ```text
 .
