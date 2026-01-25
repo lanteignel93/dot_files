@@ -248,4 +248,3 @@ function aleph() {
     # Deactivate the environment when the script exits
     deactivate
 }
-export GEMINI_API_KEY="AIzaSyAGCxhj7XCzDfJcHnrqqk8TcWvjp1oYcnM"
