@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily sync of dotfiles and obsidian repos
+
+[Service]
+Type=oneshot
+ExecStart=/home/laurent/scripts/daily_sync.sh

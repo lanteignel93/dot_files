@@ -1,0 +1,16 @@
+[user]
+    name = Laurent Lanteigne
+    email = laurent.lanteigne@gmail.com
+
+[init]
+    defaultBranch = master
+
+[core]
+	excludesfile = ~/.gitignore      #
+	; sshCommand = "ssh -i ~/.ssh/id_rsa"
+
+[github]
+	user = "lanteignel93"
+# This is the crucial part: always use SSH for GitHub
+[url "git@github.com:"]
+    insteadOf = https://github.com/
