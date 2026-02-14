@@ -25,7 +25,6 @@ require('lazy').setup({
 	{ import = 'plugins.mini-files' },    -- A minimal, fast file explorer/tree
 	{ import = 'plugins.indent-blankline' }, -- Vertical lines guiding indentation levels
 	{ import = 'plugins.alpha' },         -- The startup dashboard/greeter screen
-	{ import = 'plugins.smear' },         -- Visual effect adding a "motion blur" trail to the cursor
 	{ import = 'plugins.flash' },         -- Fast navigation allowing you to jump to specific words
 	{ import = 'plugins.treesitter' },    -- Advanced syntax highlighting and code parsing
 	{ import = 'plugins.noice' },         -- Modernizes the UI for messages, command line, and popups
