@@ -4,6 +4,7 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -130,7 +131,6 @@ setopt PROMPT_SUBST PROMPT_PERCENT
 #VIRTUAL_ENV_DISABLE_PROMPT=1
 #RPS1='$(zsh_virtualenv_prompt)'#
 #
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 #typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 alias zshconfig="nvim ~/.zshrc"
@@ -169,6 +169,8 @@ alias leet="nvim leetcode.nvim"
 alias countlnpy='find -type f -name "*.py" | xargs wc -l'
 alias mute='amixer -D pulse sset Master mute'
 alias unmute='amixer -D pulse sset Master unmute'
+alias cat='batcat'
+alias fd='fdfind'
 
 notify_phone() {
   # Check if a message argument was provided
@@ -226,3 +228,15 @@ alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
 # Explicitly source Kitty's shell integration for Zsh
 source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
 export PATH=$PATH:/home/laurent/.spicetify
+export PATH="$PATH:$HOME/yazi/target/release"
+autoload -U compinit; compinit
+source ~/somewhere/fzf-tab.plugin.zsh
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
