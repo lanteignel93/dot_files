@@ -1,0 +1,8 @@
+[Unit]
+Description=Weekly USB backup
+After=mnt-usb1.mount
+Requires=mnt-usb1.mount
+
+[Service]
+Type=oneshot
+ExecStart=/home/laurent/scripts/backup_usb.sh

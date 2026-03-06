@@ -241,3 +241,8 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+# USB backup disk alert
+if [ -f "/mnt/usb1/backups/.disk_alert" ]; then
+    echo "WARNING: $(cat /mnt/usb1/backups/.disk_alert)"
+fi
