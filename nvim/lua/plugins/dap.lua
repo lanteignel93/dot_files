@@ -4,18 +4,17 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "jay-babu/mason-nvim-dap.nvim",
-      "rcarriga/nvim-dap-ui",
-      "nvim-neotest/nvim-nio",
+      "igorlfs/nvim-dap-view", -- Modern UI replacement
     },
     config = function()
       local dap = require("dap")
-      local dapui = require("dapui")
+      local dap_view = require("dap-view")
 
       -- 1) SIGNS & HIGHLIGHTS
       vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fa1100" })
       vim.api.nvim_set_hl(0, "DapStopped", { fg = "#bdfe58" })
-      vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
-      vim.fn.sign_define("DapStopped", { text = "→", texthl = "DapStopped", linehl = "CursorLine", numhl = "" })
+      vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint" })
+      vim.fn.sign_define("DapStopped", { text = "→", texthl = "DapStopped", linehl = "CursorLine" })
 
       -- 2) MASON & ADAPTERS
       require("mason").setup()
@@ -28,7 +27,7 @@ return {
           function(config)
             mason_dap.default_setup(config)
           end,
-          -- Customizing codelldb for better C++ integration
+          -- Keep your custom C++ logic for the trading engine
           codelldb = function(config)
             config.adapters = {
               type = "server",
@@ -43,61 +42,34 @@ return {
         },
       })
 
-      -- 3) DAP UI SETUP
-      dapui.setup({
-        layouts = {
-          {
-            elements = {
-              { id = "scopes",      size = 0.33 },
-              { id = "breakpoints", size = 0.33 },
-              { id = "stacks",      size = 0.33 },
-            },
-            size = 40,
-            position = "left",
-          },
-          {
-            elements = {
-              { id = "repl",    size = 0.5 },
-              { id = "console", size = 0.5 },
-            },
-            size = 10,
-            position = "bottom",
-          },
-        },
+      -- 3) DAP VIEW SETUP
+      -- This replaces the old dapui.setup()
+      dap_view.setup({
+        winbar = {},        -- Adds clickable icons (Step, Stop, etc.) to the top of the buffer
+        auto_toggle = true, -- Automatically open/close the view when debugging starts/ends
       })
 
-      -- Auto-open/close UI
-      dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-      dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-      dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
-
-      -- 4) C++ CONFIGURATION (Specifically for your project)
+      -- 4) C++ CONFIGURATION (Build folder search)
       dap.configurations.cpp = {
         {
           name = "Launch (codelldb)",
           type = "codelldb",
           request = "launch",
           program = function()
-            -- Forces the search to start in your build folder as seen in image_f73f6d.jpg
             local path = vim.fn.getcwd() .. "/build/"
             return vim.fn.input("Path to executable: ", path, "file")
           end,
           cwd = "${workspaceFolder}",
           stopOnEntry = false,
-          -- This is critical for showing the contents of std::string, std::vector, etc.
           setupCommands = {
-            {
-              text = '-enable-pretty-printing',
-              description = 'enable pretty printing',
-              ignoreFailures = false
-            },
+            { text = '-enable-pretty-printing', description = 'enable pretty printing', ignoreFailures = false },
           },
         },
       }
       dap.configurations.c = dap.configurations.cpp
       dap.configurations.rust = dap.configurations.cpp
 
-      -- 5) KEYMAPS (Standard leader keys + Fast F-Keys)
+      -- 5) KEYMAPS (F-Keys for speed, leader for views)
       local map = vim.keymap.set
       map("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
       map("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
@@ -105,24 +77,19 @@ return {
       map("n", "<F12>", dap.step_out, { desc = "Debug: Step Out" })
 
       map("n", "<leader>db", dap.toggle_breakpoint, { desc = "DAP: Toggle Breakpoint" })
-      map("n", "<leader>dc", dap.continue, { desc = "DAP: Continue" })
+      map("n", "<leader>dv", "<cmd>DapViewToggle<cr>", { desc = "DAP: Toggle Modern View" })
       map("n", "<leader>dt", dap.terminate, { desc = "DAP: Terminate" })
-      map("n", "<leader>du", dapui.toggle, { desc = "DAP: Toggle UI" })
     end,
   },
 
+  -- Python-specific helper (Keeping the fix for the Mason path)
   {
     "mfussenegger/nvim-dap-python",
-    dependencies = { "mfussenegger/nvim-dap", "williamboman/mason.nvim" },
+    dependencies = { "mfussenegger/nvim-dap" },
     config = function()
-      local registry = require("mason-registry")
-      local pkg = registry.get_package("debugpy")
-      if pkg:is_installed() then
-        local py = pkg:get_install_path() .. "/venv/bin/python"
-        require("dap-python").setup(py)
-      else
-        require("dap-python").setup("python3")
-      end
+      -- Hardcoded path to avoid registry issues
+      local py = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      require("dap-python").setup(py)
     end,
   },
 }
