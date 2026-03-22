@@ -246,3 +246,12 @@ function y() {
 if [ -f "/mnt/usb1/backups/.disk_alert" ]; then
     echo "WARNING: $(cat /mnt/usb1/backups/.disk_alert)"
 fi
+
+# Claude Code: auto-greet on bare launch
+claude() {
+    if [[ $# -eq 0 ]]; then
+        command claude "Display my session greeting: today's quote and available skills"
+    else
+        command claude "$@"
+    fi
+}
