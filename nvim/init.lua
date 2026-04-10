@@ -40,6 +40,7 @@ require('lazy').setup({
 	{ import = 'plugins.scooter' },       -- Your new "find and replace" TUI integration
 	{ import = 'plugins.obsidian' },      -- Integration for Obsidian vaults and daily notes
 	{ import = 'plugins.screensaver' },   -- Screensaver
+	{ import = 'plugins.venv-selector' }, -- Python venv picker
 }, {
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the

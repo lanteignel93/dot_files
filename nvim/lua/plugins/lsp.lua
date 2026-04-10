@@ -20,6 +20,11 @@ return {
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('UserLspConfig', {}),
       callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client and client.supports_method('textDocument/inlayHint') then
+          vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+        end
+
         local map = function(keys, func, desc)
           vim.keymap.set('n', keys, func, { buffer = ev.buf, desc = 'LSP: ' .. desc })
         end
@@ -77,14 +82,15 @@ return {
       capabilities = capabilities,
     })
 
-    -- PYLSP
-    vim.lsp.config('pylsp', {
+    -- BASEDPYRIGHT
+    vim.lsp.config('basedpyright', {
       settings = {
-        pylsp = {
-          plugins = {
-            pyflakes = { enabled = false },
-            pycodestyle = { enabled = false },
-            pylsp_black = { enabled = true },
+        basedpyright = {
+          analysis = {
+            typeCheckingMode = "basic",
+            autoSearchPaths = true,
+            useLibraryCodeForTypes = true,
+            diagnosticMode = "openFilesOnly",
           },
         },
       },
@@ -93,7 +99,7 @@ return {
 
     -- 5. ENABLE SERVERS
     local servers = { 
-      'clangd', 'lua_ls', 'pylsp', 'ruff', 'jsonls', 
+      'clangd', 'lua_ls', 'basedpyright', 'ruff', 'jsonls',
       'sqlls', 'terraformls', 'yamlls', 'bashls', 'dockerls' 
     }
 

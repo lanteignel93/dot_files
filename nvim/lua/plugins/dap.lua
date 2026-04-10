@@ -21,7 +21,7 @@ return {
       local mason_dap = require("mason-nvim-dap")
 
       mason_dap.setup({
-        ensure_installed = { "codelldb", "python" },
+        ensure_installed = { "codelldb" },
         automatic_installation = true,
         handlers = {
           function(config)
@@ -72,11 +72,13 @@ return {
       -- 5) KEYMAPS (F-Keys for speed, leader for views)
       local map = vim.keymap.set
       map("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
+      map("n", "<F6>", dap.run_to_cursor, { desc = "Debug: Run to Cursor" })
       map("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
       map("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
       map("n", "<F12>", dap.step_out, { desc = "Debug: Step Out" })
 
       map("n", "<leader>db", dap.toggle_breakpoint, { desc = "DAP: Toggle Breakpoint" })
+      map("n", "<leader>dc", dap.continue, { desc = "DAP: Continue" })
       map("n", "<leader>dv", "<cmd>DapViewToggle<cr>", { desc = "DAP: Toggle Modern View" })
       map("n", "<leader>dt", dap.terminate, { desc = "DAP: Terminate" })
     end,
@@ -87,9 +89,37 @@ return {
     "mfussenegger/nvim-dap-python",
     dependencies = { "mfussenegger/nvim-dap" },
     config = function()
-      -- Hardcoded path to avoid registry issues
-      local py = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
-      require("dap-python").setup(py)
+      local dap = require("dap")
+      local debugpy_py = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      require("dap-python").setup(debugpy_py)
+
+      local function get_python_path()
+        if vim.env.VIRTUAL_ENV then
+          return vim.env.VIRTUAL_ENV .. "/bin/python"
+        end
+        return "python3"
+      end
+
+      dap.configurations.python = {
+        {
+          type = "python",
+          request = "launch",
+          name = "Launch with Arguments",
+          program = "${file}",
+          args = function()
+            local args_str = vim.fn.input("Arguments: ")
+            return vim.split(args_str, " +")
+          end,
+          pythonPath = get_python_path,
+        },
+        {
+          type = "python",
+          request = "launch",
+          name = "Standard Launch (No Args)",
+          program = "${file}",
+          pythonPath = get_python_path,
+        },
+      }
     end,
   },
 }
