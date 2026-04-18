@@ -1,3 +1,8 @@
+# USB backup disk alert (must run BEFORE p10k instant prompt to avoid I/O warning)
+if [ -s "/mnt/usb1/backups/.disk_alert" ]; then
+    echo "WARNING: $(cat /mnt/usb1/backups/.disk_alert)"
+fi
+
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -241,11 +246,6 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
-
-# USB backup disk alert
-if [ -f "/mnt/usb1/backups/.disk_alert" ]; then
-    echo "WARNING: $(cat /mnt/usb1/backups/.disk_alert)"
-fi
 
 # Claude Code: auto-greet on bare launch
 claude() {
