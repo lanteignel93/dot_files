@@ -1,0 +1,21 @@
+[Unit]
+Description=rclone mount OneDrive at ~/OneDrive
+After=network-online.target
+Wants=network-online.target
+AssertPathIsDirectory=%h/OneDrive
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/rclone mount OneDrive: %h/OneDrive \
+    --vfs-cache-mode writes \
+    --vfs-cache-max-size 2G \
+    --dir-cache-time 1h \
+    --poll-interval 15s \
+    --log-level INFO \
+    --log-file %h/.cache/rclone-onedrive.log
+ExecStop=/usr/bin/fusermount -u %h/OneDrive
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
