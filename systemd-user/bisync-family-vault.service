@@ -1,0 +1,17 @@
+[Unit]
+Description=Bidirectional sync of Family Vault between Google Drive and OneDrive
+After=network-online.target rclone-onedrive.service rclone-gdrive.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rclone bisync gdrive:"Family Vault" OneDrive:"Family-Vault" \
+    --create-empty-src-dirs \
+    --conflict-resolve newer \
+    --conflict-loser num \
+    --max-delete 25 \
+    --log-file %h/.cache/bisync-family-vault.log \
+    --log-level INFO
+
+[Install]
+WantedBy=default.target
