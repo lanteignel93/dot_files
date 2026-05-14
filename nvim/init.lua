@@ -1,6 +1,7 @@
 require 'core.keymaps'  -- Load general keymaps
 require 'core.options'  -- Load general options
 require 'core.snippets' -- Custom code snippets
+require 'core.cpp'      -- C/C++ buffer helpers (header switch, #pragma once skeleton)
 
 -- 1. SET UP LAZY.NVIM
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -37,6 +38,7 @@ require('lazy').setup({
 	{ import = 'plugins.bullet' },        -- Auto-formatting for bulleted lists (useful for notes)
 	{ import = 'plugins.lazygit' },       -- Integration for the LazyGit terminal interface
 	{ import = 'plugins.dap' },           -- Debug Adapter Protocol (for debugging code execution)
+	{ import = 'plugins.neogen' },        -- Doxygen / docstring scaffolder for functions and classes
 	{ import = 'plugins.scooter' },       -- Your new "find and replace" TUI integration
 	{ import = 'plugins.screensaver' },   -- Screensaver
 	{ import = 'plugins.venv-selector' }, -- Python venv picker
