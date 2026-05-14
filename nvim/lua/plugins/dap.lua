@@ -4,7 +4,8 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "jay-babu/mason-nvim-dap.nvim",
-      "igorlfs/nvim-dap-view", -- Modern UI replacement
+      -- Pinned: commits after 2026-04-03 require nvim 0.12 stable for the `update` highlight key
+      { "igorlfs/nvim-dap-view", commit = "e57ac4051aa56293e89991ab93bc148de35321ca" },
     },
     config = function()
       local dap = require("dap")

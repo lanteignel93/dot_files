@@ -31,7 +31,7 @@ require('lazy').setup({
 	{ import = 'plugins.lsp' },           -- Language Server Protocol (Diagnostics, Go-to-Definition)
 	{ import = 'plugins.conform' },       -- Code formatter (auto-formats on save)
 	{ import = 'plugins.snacks' },        -- A bundle of "Quality of Life" tools (scratchpads, terminal, etc.)
-	{ import = 'plugins.cmp' },           -- The autocompletion dropdown menu engine
+	{ import = 'plugins.blink-cmp' },     -- The autocompletion dropdown menu engine
 	{ import = 'plugins.leetcode' },      -- Interface for solving LeetCode problems inside Neovim
 	{ import = 'plugins.markview' },      -- Renders Markdown (headings, tables) nicely directly in the buffer
 	{ import = 'plugins.bullet' },        -- Auto-formatting for bulleted lists (useful for notes)
