@@ -24,24 +24,24 @@ require('lazy').setup({
 	{ import = 'plugins.comment' },       -- Easy commenting keymaps (usually 'gc' to toggle)
 	{ import = 'plugins.mini-files' },    -- A minimal, fast file explorer/tree
 	{ import = 'plugins.indent-blankline' }, -- Vertical lines guiding indentation levels
-	{ import = 'plugins.alpha' },         -- The startup dashboard/greeter screen
+	-- { import = 'plugins.alpha' },         -- The startup dashboard/greeter screen
 	{ import = 'plugins.flash' },         -- Fast navigation allowing you to jump to specific words
 	{ import = 'plugins.treesitter' },    -- Advanced syntax highlighting and code parsing
 	{ import = 'plugins.noice' },         -- Modernizes the UI for messages, command line, and popups
 	{ import = 'plugins.lsp' },           -- Language Server Protocol (Diagnostics, Go-to-Definition)
 	{ import = 'plugins.conform' },       -- Code formatter (auto-formats on save)
 	{ import = 'plugins.snacks' },        -- A bundle of "Quality of Life" tools (scratchpads, terminal, etc.)
-	{ import = 'plugins.cmp' },           -- The autocompletion dropdown menu engine
+	{ import = 'plugins.blink-cmp' },     -- The autocompletion dropdown menu engine
 	{ import = 'plugins.leetcode' },      -- Interface for solving LeetCode problems inside Neovim
 	{ import = 'plugins.markview' },      -- Renders Markdown (headings, tables) nicely directly in the buffer
 	{ import = 'plugins.bullet' },        -- Auto-formatting for bulleted lists (useful for notes)
 	{ import = 'plugins.lazygit' },       -- Integration for the LazyGit terminal interface
 	{ import = 'plugins.dap' },           -- Debug Adapter Protocol (for debugging code execution)
 	{ import = 'plugins.scooter' },       -- Your new "find and replace" TUI integration
-	{ import = 'plugins.obsidian' },      -- Integration for Obsidian vaults and daily notes
 	{ import = 'plugins.screensaver' },   -- Screensaver
 	{ import = 'plugins.venv-selector' }, -- Python venv picker
 }, {
+	rocks = { enabled = false },
 	ui = {
 		-- If you have a Nerd Font, set icons to an empty table which will use the
 		-- default lazy.nvim defined Nerd Font icons otherwise define a unicode icons table

@@ -150,7 +150,7 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-alias ls="exa -al --sort newest"
+alias ls="eza -al --sort newest"
 alias tell="whoami; hostname; pwd"
 alias dir="ls -l | grep ^d" 
 alias d="df -h | awk '{print \$6}' | cut -c1-4"
@@ -175,7 +175,7 @@ alias leet="nvim leetcode.nvim"
 alias countlnpy='find -type f -name "*.py" | xargs wc -l'
 alias mute='amixer -D pulse sset Master mute'
 alias unmute='amixer -D pulse sset Master unmute'
-alias cat='batcat'
+# alias cat='batcat'
 alias fd='fdfind'
 
 notify_phone() {
@@ -232,9 +232,9 @@ fi
 
 alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
 # Explicitly source Kitty's shell integration for Zsh
-source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
-export PATH=$PATH:/home/laurent/.spicetify
-export PATH="$PATH:$HOME/yazi/target/release"
+# source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
+# export PATH=$PATH:/home/laurent/.spicetify
+# export PATH="$PATH:$HOME/yazi/target/release"
 autoload -U compinit; compinit
 source ~/somewhere/fzf-tab.plugin.zsh
 
@@ -255,3 +255,4 @@ claude() {
         command claude "$@"
     fi
 }
+export KETCHUM_ARENA_SO=/home/llanteigne/htaabp-core/build/release/libs/ketchum-arena/libketchum-arena.so
