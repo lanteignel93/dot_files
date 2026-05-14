@@ -65,7 +65,6 @@ return { -- LSP Configuration & Plugins
       'yamlls',
       'bashls',
       'dockerls',
-      'r_language_server',
     }
 
     -- Server-specific settings

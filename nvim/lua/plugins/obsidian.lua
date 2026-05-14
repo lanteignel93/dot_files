@@ -2,6 +2,8 @@ return {
   "epwalsh/obsidian.nvim",
   version = "*",
 
+  cond = function() return not vim.fn.hostname():match("matcap") end,
+
   lazy = false,
   ft = "markdown",
 
