@@ -175,3 +175,13 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+### Runtime artifacts (config dirs are symlinked into $HOME) ###
+# systemd state: *.target.wants/ are created when units are enabled
+systemd-user/*.target.wants/
+
+# nvim runtime junk that lands inside the symlinked nvim/ dir
+nvim/.netrwhist
+nvim/.shada*
+nvim/sessions/*.vim
+nvim/lazy-lock.json.backup
