@@ -232,9 +232,9 @@ fi
 
 alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
 # Explicitly source Kitty's shell integration for Zsh
-# source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
-# export PATH=$PATH:/home/laurent/.spicetify
-# export PATH="$PATH:$HOME/yazi/target/release"
+source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
+export PATH=$PATH:/home/laurent/.spicetify
+export PATH="$PATH:$HOME/yazi/target/release"
 autoload -U compinit; compinit
 source ~/somewhere/fzf-tab.plugin.zsh
 
