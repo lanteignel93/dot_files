@@ -150,7 +150,12 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-alias ls="eza -al --sort newest"
+# `eza` on Fedora, `exa` on Ubuntu — pick whichever is installed
+if command -v eza &>/dev/null; then
+    alias ls="eza -al --sort newest"
+elif command -v exa &>/dev/null; then
+    alias ls="exa -al --sort newest"
+fi
 alias tell="whoami; hostname; pwd"
 alias dir="ls -l | grep ^d" 
 alias d="df -h | awk '{print \$6}' | cut -c1-4"
