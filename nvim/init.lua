@@ -40,7 +40,7 @@ require('lazy').setup({
 	{ import = 'plugins.dap' },           -- Debug Adapter Protocol (for debugging code execution)
 	{ import = 'plugins.neogen' },        -- Doxygen / docstring scaffolder for functions and classes
 	{ import = 'plugins.scooter' },       -- Your new "find and replace" TUI integration
-	{ import = 'plugins.screensaver' },   -- Screensaver
+	-- { import = 'plugins.screensaver' },   -- Screensaver
 	{ import = 'plugins.venv-selector' }, -- Python venv picker
 }, {
 	rocks = { enabled = false },
