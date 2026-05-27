@@ -107,7 +107,7 @@ link "$DOTFILES/.tmux.conf"  "$HOME/.tmux.conf"
 link "$DOTFILES/.tmux"  "$HOME/.tmux"
 link "$DOTFILES/.fonts" "$HOME/.fonts"
 
-for app in nvim kitty alacritty awesome polybar nitrogen lazygit htop neofetch bottom gtk-4.0; do
+for app in nvim kitty alacritty awesome polybar nitrogen lazygit htop neofetch bottom gtk-4.0 tuicr; do
   link "$DOTFILES/$app" "$HOME/.config/$app"
 done
 
