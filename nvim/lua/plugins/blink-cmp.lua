@@ -5,8 +5,8 @@ return {
 
   -- pin to v1 branch (v2 requires blink.lib native lib we don't have)
   branch = 'v1',
-  -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-  -- build = 'cargo build --release',
+  -- build the Rust fuzzy matcher locally (branch installs don't fetch prebuilt binaries)
+  build = 'cargo build --release',
   -- If you use nix, you can build from source using latest nightly rust with:
   -- build = 'nix run .#build-plugin',
 
@@ -53,7 +53,7 @@ return {
     -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
     --
     -- See the fuzzy documentation for more information
-    fuzzy = { implementation = 'prefer_rust_with_warning' },
+    fuzzy = { implementation = 'prefer_rust' },
   },
   opts_extend = { 'sources.default' },
 }
