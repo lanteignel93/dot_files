@@ -62,6 +62,10 @@ return {
           end,
           cwd = "${workspaceFolder}",
           stopOnEntry = false,
+          -- Use the native (clang/lldb) expression evaluator in the REPL/watches
+          -- so `?` handles function calls, methods, casts and enum/namespace `::`
+          -- (codelldb's default "simple" dialect does not).
+          expressions = "native",
           setupCommands = {
             { text = '-enable-pretty-printing', description = 'enable pretty printing', ignoreFailures = false },
           },
