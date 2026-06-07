@@ -86,6 +86,8 @@ return {
       map("n", "<leader>dc", dap.continue, { desc = "DAP: Continue" })
       map("n", "<leader>dv", "<cmd>DapViewToggle<cr>", { desc = "DAP: Toggle Modern View" })
       map("n", "<leader>dt", dap.terminate, { desc = "DAP: Terminate" })
+      map("n", "<leader>dw", function() require("dap-view").add_expr() end, { desc = "DAP: Watch expr/word under cursor" })
+      map("v", "<leader>dw", function() require("dap-view").add_expr() end, { desc = "DAP: Watch selection" })
     end,
   },
 
