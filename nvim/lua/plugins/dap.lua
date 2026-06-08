@@ -54,7 +54,7 @@ return {
         },
         winbar = {
           default_section = "scopes", -- locals auto-populate; opens here instead of empty Watches
-          controls = { enabled = true }, -- step/continue/terminate buttons in the panel winbar
+          -- controls intentionally disabled: their %$hl$ syntax hits E539 on this nvim+pinned-dap-view
         },
       })
 
