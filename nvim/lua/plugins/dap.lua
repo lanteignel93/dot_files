@@ -46,8 +46,16 @@ return {
       -- 3) DAP VIEW SETUP
       -- This replaces the old dapui.setup()
       dap_view.setup({
-        winbar = {},        -- Adds clickable icons (Step, Stop, etc.) to the top of the buffer
-        auto_toggle = true, -- Automatically open/close the view when debugging starts/ends
+        auto_toggle = "keep_terminal", -- panel closes on stop, terminal stays so output is readable
+        windows = {
+          position = "left",
+          size = 0.33, -- ~100 cols ultrawide, ~70 on 1920 -- fits long C++ symbols
+          terminal = { position = "below", size = 0.38 },
+        },
+        winbar = {
+          default_section = "scopes", -- locals auto-populate; opens here instead of empty Watches
+          controls = { enabled = true }, -- step/continue/terminate buttons in the panel winbar
+        },
       })
 
       -- 4) C++ CONFIGURATION (Build folder search)
