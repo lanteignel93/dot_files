@@ -218,6 +218,8 @@ local function set_wallpaper(s)
         end
         gears.wallpaper.maximized(wallpaper, s, true)
     end
+    -- Release the cairo surface immediately so it doesn't accumulate on property::geometry (wallpaper leak fix)
+    collectgarbage("collect")
 end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
