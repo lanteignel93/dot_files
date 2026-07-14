@@ -108,7 +108,16 @@ return {
         lualine_x = { { 'location', padding = 0 } },
       },
       tabline = {
-        lualine_a = { 'buffers' },
+        lualine_a = {
+          {
+            'buffers',
+            -- Pinned: the default inherits mode-section colors, which a
+            -- :colorscheme switch (highlight clear) can knock off lime.
+            buffers_color = {
+              active = { fg = colors.bg, bg = colors.lime, gui = 'bold' },
+            },
+          },
+        },
         lualine_b = {},
         lualine_c = {},
         lualine_x = {},

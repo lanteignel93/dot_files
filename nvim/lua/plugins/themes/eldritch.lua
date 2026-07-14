@@ -11,8 +11,6 @@ return {
             theme = 'eldritch',
             transparent = true,
          }
-
-         vim.cmd.colorscheme 'eldritch'
         end
     }
 }

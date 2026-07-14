@@ -14,7 +14,7 @@ return {
       cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
 
       -- toggle theme style ---
-      toggle_style_key = '<leader>th', -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+      toggle_style_key = nil, -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
       toggle_style_list = { 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light' }, -- List of styles to toggle between
 
       -- Change code style ---
@@ -49,26 +49,6 @@ return {
 
     local onedark = require 'onedark'
     onedark.setup(config)
-    onedark.load()
-
-    -- Make the background of diagnostics messages transparent
-    local set_diagnostics_bg_transparency = function()
-      vim.cmd [[highlight DiagnosticVirtualTextError guibg=none]]
-      vim.cmd [[highlight DiagnosticVirtualTextWarn guibg=none]]
-      vim.cmd [[highlight DiagnosticVirtualTextInfo guibg=none]]
-      vim.cmd [[highlight DiagnosticVirtualTextHint guibg=none]]
-    end
-    set_diagnostics_bg_transparency()
-
-    -- Toggle background transparency
-    local toggle_transparency = function()
-      config.transparent = not config.transparent
-      onedark.setup(config)
-      onedark.load()
-      set_diagnostics_bg_transparency()
-    end
-
-    vim.keymap.set('n', '<leader>bg', toggle_transparency, { noremap = true, silent = true })
   end,
 }
 

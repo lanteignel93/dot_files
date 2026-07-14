@@ -11,8 +11,6 @@ return {
             theme = 'fluoromachine',
             transparent = true,
          }
-
-         vim.cmd.colorscheme 'fluoromachine'
         end
     }
 }

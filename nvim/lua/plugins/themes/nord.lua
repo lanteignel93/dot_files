@@ -12,29 +12,5 @@ return {
     vim.g.nord_enable_sidebar_background = false -- Re-enables the background of the sidebar if you disabled the background of everything
     vim.g.nord_uniform_diff_background = true    -- enables/disables colorful backgrounds when used in diff mode
     vim.g.nord_bold = false                      -- enables/disables bold
-
-    -- Load the colorscheme
-    require('nord').set()
-
-    -- Function to set menu borders to transparent
-    -- local set_menu_border_transparency = function()
-    --   vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'NONE', fg = 'NONE' })
-    --   vim.api.nvim_set_hl(0, 'FloatBorder', { bg = 'NONE', fg = 'NONE' })
-    -- end
-
-    -- Execute the function once after loading the colorscheme
-    -- set_menu_border_transparency()
-
-    local bg_transparent = true
-
-    -- Toggle background transparency
-    local toggle_transparency = function()
-      bg_transparent = not bg_transparent
-      vim.g.nord_disable_background = bg_transparent
-      vim.cmd [[colorscheme nord]]
-      -- set_menu_border_transparency()
-    end
-
-    vim.keymap.set('n', '<leader>bg', toggle_transparency, { noremap = true, silent = true })
   end,
 }

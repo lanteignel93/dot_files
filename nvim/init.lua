@@ -19,6 +19,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
 	{ import = 'plugins.theme' },         -- Colorscheme configuration
+	{ import = 'plugins.themes' },        -- Installed-but-inactive theme pool (previewable via :Telescope colorscheme)
 	{ import = 'plugins.lualine' },       -- The status line bar at the bottom of the window
 	{ import = 'plugins.misc' },          -- Collection of small, uncategorized utilities
 	{ import = 'plugins.gitsigns' },      -- Git indicators (added/modified lines) in the sidebar gutter

@@ -19,6 +19,5 @@ return {
     vim.g.gruvbox_material_menu_selection_background = "blue"
     -- 0 or 1 
     vim.g.gruvbox_material_diagnostic_text_highlight = 1
-    vim.cmd.colorscheme 'gruvbox-material'
   end,
 }
