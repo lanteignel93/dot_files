@@ -98,6 +98,7 @@ log "BACKUP_DIR=$BACKUP_DIR  (DRY_RUN=$DRY_RUN)"
 log ""
 
 link "$DOTFILES/.zshrc"      "$HOME/.zshrc"
+link "$DOTFILES/.zshenv"     "$HOME/.zshenv"
 link "$DOTFILES/.bashrc"     "$HOME/.bashrc"
 link "$DOTFILES/.p10k.zsh"   "$HOME/.p10k.zsh"
 link "$DOTFILES/.profile"    "$HOME/.profile"
