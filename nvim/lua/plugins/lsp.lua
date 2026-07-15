@@ -5,23 +5,27 @@ return { -- LSP Configuration & Plugins
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
 
-    -- nvim-cmp source for LSP
-    'hrsh7th/cmp-nvim-lsp',
+    -- Completion engine (provides LSP capabilities)
+    'saghen/blink.cmp',
 
     -- UI for LSP progress
     { 'j-hui/fidget.nvim', tag = 'v1.4.0', opts = {} },
 
     -- Explicitly state all dependencies for this config
     'nvim-telescope/telescope.nvim',
-    'hrsh7th/nvim-cmp', -- ADDED: The missing dependency
   },
   config = function()
     -- This section adds custom icons for the diagnostic signs in the sign column.
-    local signs = { Error = ' ', Warn = ' ', Hint = ' ', Info = ' ' }
-    for type, icon in pairs(signs) do
-      local hl = 'DiagnosticSign' .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
-    end
+    vim.diagnostic.config({
+      signs = {
+        text = {
+          [vim.diagnostic.severity.ERROR] = ' ',
+          [vim.diagnostic.severity.WARN] = ' ',
+          [vim.diagnostic.severity.HINT] = ' ',
+          [vim.diagnostic.severity.INFO] = ' ',
+        },
+      },
+    })
 
     -- This autocommand runs whenever an LSP client attaches to a buffer.
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -47,8 +51,12 @@ return { -- LSP Configuration & Plugins
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
         map('K', vim.lsp.buf.hover, 'Hover Documentation')
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-        map('<leader>dp', vim.diagnostic.goto_prev, '[D]iagnostic [P]revious')
-        map('<leader>dn', vim.diagnostic.goto_next, '[D]iagnostic [N]ext')
+        map('<leader>dp', function()
+          vim.diagnostic.jump({ count = -1, float = true })
+        end, '[D]iagnostic [P]revious')
+        map('<leader>dn', function()
+          vim.diagnostic.jump({ count = 1, float = true })
+        end, '[D]iagnostic [N]ext')
         map('<leader>de', vim.diagnostic.open_float, 'Show line [D]iagnostics')
       end,
     })
@@ -67,45 +75,43 @@ return { -- LSP Configuration & Plugins
       'dockerls',
     }
 
-    -- Server-specific settings
-    local server_settings = {
-      lua_ls = {
-        settings = {
-          Lua = {
-            runtime = { version = 'LuaJIT' },
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-            diagnostics = {
-              globals = { 'vim' },
-            },
-          },
-        },
-      },
-      basedpyright = {
-        settings = {
-          basedpyright = {
-            analysis = {
-              typeCheckingMode = "basic",
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              diagnosticMode = "openFilesOnly",
-            },
-          },
-        },
-      },
-    }
-
-    -- Initialize mason.nvim
-    require('mason').setup()
-
-    -- Get the capabilities table for nvim-cmp
-    local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    -- mason-lspconfig v2 dropped the `handlers` option: it now enables every
+    -- installed server via vim.lsp.enable(), picking up whatever is registered
+    -- through vim.lsp.config(). So all per-server settings live here.
+    local capabilities = require('blink.cmp').get_lsp_capabilities()
     capabilities.offsetEncoding = { 'utf-16' } -- Fix for Clangd crash
 
+    vim.lsp.config('*', { capabilities = capabilities })
+
+    vim.lsp.config('lua_ls', {
+      settings = {
+        Lua = {
+          runtime = { version = 'LuaJIT' },
+          workspace = { checkThirdParty = false },
+          telemetry = { enable = false },
+          diagnostics = {
+            globals = { 'vim' },
+          },
+        },
+      },
+    })
+
+    vim.lsp.config('basedpyright', {
+      settings = {
+        basedpyright = {
+          analysis = {
+            typeCheckingMode = 'basic',
+            autoSearchPaths = true,
+            useLibraryCodeForTypes = true,
+            diagnosticMode = 'openFilesOnly',
+          },
+        },
+      },
+    })
+
     -- CLANGD native configuration (C/C++)
-    -- clangd discovers compile_commands.json by walking up from each file,
-    -- so we don't pin --compile-commands-dir (it would freeze to nvim's
-    -- launch cwd and break when opening files in other projects).
+    -- root_markers makes clangd resolve the project root per-buffer by walking
+    -- up from each file, so opening files from other projects keeps working.
     vim.lsp.config('clangd', {
       cmd = {
         'clangd',
@@ -114,26 +120,17 @@ return { -- LSP Configuration & Plugins
         '--header-insertion=iwyu',
         '--completion-style=detailed',
         '--query-driver=/usr/bin/g++,/usr/bin/c++',
+        -- Resolved against nvim's cwd; when the path doesn't exist clangd
+        -- falls back to the normal ancestor search, so this is a no-op
+        -- outside cmake-preset repos (htaabp-core layout).
+        '--compile-commands-dir=build/release',
       },
-      root_dir = vim.fs.root(0, { 'compile_commands.json', '.git' }),
-      capabilities = capabilities,
+      root_markers = { 'compile_commands.json', '.git' },
     })
 
-    -- Corrected setup for mason-lspconfig
+    require('mason').setup()
     require('mason-lspconfig').setup({
       ensure_installed = servers,
-      handlers = {
-        -- This default handler runs for every server.
-        function(server_name)
-          require('lspconfig')[server_name].setup({
-            capabilities = capabilities,
-            settings = server_settings[server_name],
-          })
-        end,
-        pylsp = function() end,
-        pyright = function() end,
-        clangd = function() end,
-      },
     })
   end,
 }

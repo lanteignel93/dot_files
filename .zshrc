@@ -252,6 +252,61 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+# New topic branch + worktree + configured build (docs/contributing.md workflow).
+# Works in any repo: run it from inside a checkout (or one of its worktrees);
+# outside a git repo it defaults to ~/htaabp-core. Branches off the default
+# branch of `upstream` (if present, else `origin`); worktrees land in a
+# `topics/` dir next to the main checkout; the cmake configure only runs if
+# the repo has CMakePresets.json.
+#
+# Usage: new-topic <name> [prefix]        branch = <prefix>/<name>, default t/
+#
+# Examples:
+#   $ cd ~/htaabp-core && new-topic slot-arena
+#       branch t/slot-arena off upstream/main, worktree ~/topics/slot-arena,
+#       cmake --preset release (emits compile_commands.json for clangd),
+#       leaves you cd'd into the worktree — open nvim and go.
+#   $ new-topic widget-overflow fix
+#       same, but branch fix/widget-overflow (works from inside any worktree).
+new-topic() {
+    local name="$1" prefix="${2:-t}"
+    if [[ -z "$name" ]]; then
+        echo "usage: new-topic <name> [prefix]" >&2
+        return 1
+    fi
+
+    # Main checkout even when invoked from a worktree; fallback outside git.
+    local gitdir repo
+    gitdir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+    repo=${gitdir:+${gitdir:h}}
+    repo=${repo:-$HOME/htaabp-core}
+
+    local base_remote=origin
+    git -C "$repo" remote | grep -qx upstream && base_remote=upstream
+    git -C "$repo" fetch "$base_remote" || return
+
+    local base_branch
+    base_branch=$(git -C "$repo" symbolic-ref --short "refs/remotes/$base_remote/HEAD" 2>/dev/null)
+    base_branch=${base_branch#"$base_remote/"}
+    if [[ -z "$base_branch" ]]; then
+        git -C "$repo" show-ref -q "refs/remotes/$base_remote/main" && base_branch=main
+    fi
+    if [[ -z "$base_branch" ]]; then
+        git -C "$repo" show-ref -q "refs/remotes/$base_remote/master" && base_branch=master
+    fi
+    base_branch=${base_branch:-main}
+
+    local branch="$prefix/$name" wt="${repo:h}/topics/$name"
+    git -C "$repo" branch "$branch" "$base_remote/$base_branch" || return
+    git -C "$repo" worktree add "$wt" "$branch" || return
+    git -C "$repo" push origin "$branch" ||
+        echo "new-topic: push to fork failed — 'git push origin $branch' later" >&2
+    cd "$wt" || return
+    if [[ -f CMakePresets.json ]]; then
+        cmake --preset release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    fi
+}
+
 # Claude Code: auto-greet on bare launch
 claude() {
     if [[ $# -eq 0 ]]; then
@@ -261,3 +316,6 @@ claude() {
     fi
 }
 export KETCHUM_ARENA_SO=/home/llanteigne/htaabp-core/build/release/libs/ketchum-arena/libketchum-arena.so
+export PATH="$HOME/.local/bin:$PATH"
+export DATABENTO_API_KEY='db-HsBxyMM7LTp4QYPhCnQd8gq7E7yBF'
+export ANTHROPIC_API_KEY="sk-ant-..."

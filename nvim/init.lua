@@ -31,6 +31,7 @@ require('lazy').setup({
 	{ import = 'plugins.treesitter' },    -- Advanced syntax highlighting and code parsing
 	{ import = 'plugins.noice' },         -- Modernizes the UI for messages, command line, and popups
 	{ import = 'plugins.lsp' },           -- Language Server Protocol (Diagnostics, Go-to-Definition)
+	{ import = 'plugins.lazydev' },       -- vim.* API types + completion for lua_ls when editing the config
 	{ import = 'plugins.conform' },       -- Code formatter (auto-formats on save)
 	{ import = 'plugins.snacks' },        -- A bundle of "Quality of Life" tools (scratchpads, terminal, etc.)
 	{ import = 'plugins.blink-cmp' },     -- The autocompletion dropdown menu engine
