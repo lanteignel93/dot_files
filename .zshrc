@@ -317,5 +317,5 @@ claude() {
 }
 export KETCHUM_ARENA_SO=/home/llanteigne/htaabp-core/build/release/libs/ketchum-arena/libketchum-arena.so
 export PATH="$HOME/.local/bin:$PATH"
-export DATABENTO_API_KEY='db-HsBxyMM7LTp4QYPhCnQd8gq7E7yBF'
-export ANTHROPIC_API_KEY="sk-ant-..."
+# Secrets live outside the repo — never commit keys here
+[[ -f "$HOME/.zsh_secrets" ]] && source "$HOME/.zsh_secrets"
