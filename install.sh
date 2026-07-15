@@ -114,6 +114,12 @@ done
 
 link "$DOTFILES/systemd-user" "$HOME/.config/systemd/user"
 
+if [[ "$DRY_RUN" == "0" ]]; then
+  git -C "$DOTFILES" config core.hooksPath hooks
+  log "hooks    core.hooksPath = hooks (gitleaks pre-commit)"
+  command -v gitleaks >/dev/null 2>&1 || warn "gitleaks not on PATH — pre-commit hook will refuse commits until installed"
+fi
+
 if [[ "$LINK_SSH" == "1" ]]; then
   [[ -d "$PRIVATE/.git" ]] || fail "$PRIVATE is not a git repo (needed for ssh symlink)"
   link "$PRIVATE/ssh/config" "$HOME/.ssh/config"

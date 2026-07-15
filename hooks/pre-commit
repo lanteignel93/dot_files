@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Block commits containing secrets. Wired via: git config core.hooksPath hooks
+# Bypass for a false positive: SKIP_GITLEAKS=1 git commit ...
+set -euo pipefail
+
+if [[ "${SKIP_GITLEAKS:-0}" == "1" ]]; then
+    echo "pre-commit: gitleaks skipped (SKIP_GITLEAKS=1)"
+    exit 0
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "pre-commit: gitleaks not found — install it or set SKIP_GITLEAKS=1" >&2
+    exit 1
+fi
+
+exec gitleaks git --pre-commit --staged --redact --verbose
