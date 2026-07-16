@@ -185,3 +185,7 @@ nvim/.netrwhist
 nvim/.shada*
 nvim/sessions/*.vim
 nvim/lazy-lock.json.backup
+
+# runtime junk generated inside symlinked dirs
+.tmux/plugins/*/venv/
+nvim/.claude/
