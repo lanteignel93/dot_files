@@ -236,8 +236,9 @@ if ! ssh-add -l >/dev/null; then
 fi
 
 alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
-# Explicitly source Kitty's shell integration for Zsh
-source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
+# Explicitly source Kitty's shell integration for Zsh (desktop only)
+[[ -f ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh ]] &&
+    source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
 export PATH=$PATH:/home/laurent/.spicetify
 export PATH="$PATH:$HOME/yazi/target/release"
 autoload -U compinit; compinit
@@ -319,3 +320,5 @@ export KETCHUM_ARENA_SO=/home/llanteigne/htaabp-core/build/release/libs/ketchum-
 export PATH="$HOME/.local/bin:$PATH"
 # Secrets live outside the repo — never commit keys here
 [[ -f "$HOME/.zsh_secrets" ]] && source "$HOME/.zsh_secrets"
+# Machine-local config (aliases, env) — not tracked in the repo
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
