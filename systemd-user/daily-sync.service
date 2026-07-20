@@ -1,6 +1,8 @@
 [Unit]
+OnFailure=notify-failure@%n.service
 Description=Daily sync of dotfiles and obsidian repos
 
 [Service]
 Type=oneshot
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=/home/laurent/scripts/daily_sync.sh

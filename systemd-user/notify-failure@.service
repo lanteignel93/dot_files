@@ -1,0 +1,6 @@
+[Unit]
+Description=Failure notification for %i
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'curl -s -H "Title: systemd failure on %H" -H "Priority: high" -H "Tags: rotating_light" -d "%i failed at $(date +%%H:%%M). Debug: journalctl --user -u %i" ntfy.sh/laurent-phone-to-computer-182764129 >/dev/null; command -v notify-send >/dev/null 2>&1 && notify-send -u critical "systemd failure" "%i failed" || true'
