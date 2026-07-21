@@ -22,7 +22,8 @@ for var in VPN_SERVER VPN_USER VPN_PASS VPN_DOMAIN; do
         || { echo "vpn: set $var in $SECRETS" >&2; exit 1; }
 done
 
-is_up() { ip link show ppp0 &>/dev/null; }
+# up = ppp0 exists AND has an address (device appears before negotiation ends)
+is_up() { ip -brief addr show ppp0 2>/dev/null | grep -q '[0-9]\.'; }
 
 # A pid file left by the GUI (owned by us, not root) makes root's netExtender
 # fail with "open lock file failed" under fs.protected_regular — clear it.
@@ -60,11 +61,12 @@ case "${1:-}" in
             -u "$VPN_USER" -p "$VPN_PASS" -d "$VPN_DOMAIN" "$VPN_SERVER" \
             >> "$LOG" 2>&1 &
         disown
-        for _ in $(seq 1 30); do
+        echo "(approve the MFA push on your phone if prompted)"
+        for _ in $(seq 1 120); do
             is_up && { echo "VPN up."; exit 0; }
             sleep 1
         done
-        echo "vpn: tunnel did not come up in 30s — check $LOG" >&2
+        echo "vpn: tunnel did not come up in 120s — check $LOG" >&2
         exit 1
         ;;
     "")
