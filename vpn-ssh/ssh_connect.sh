@@ -37,7 +37,10 @@ perms=$(stat -c '%a' "$SECRETS")
 [[ "$perms" == "600" ]] || { echo "ssh-connect: $SECRETS must be chmod 600 (is $perms)" >&2; exit 1; }
 # shellcheck source=/dev/null
 source "$SECRETS"
-[[ -n "${SSH_PASS:-}" && "$SSH_PASS" != "CHANGEME" ]] \
-    || { echo "ssh-connect: set SSH_PASS in $SECRETS" >&2; exit 1; }
+# Per-host override: SSH_PASS_<host with . and - as _>, else default SSH_PASS
+host_var="SSH_PASS_${host//[.-]/_}"
+pass="${!host_var:-${SSH_PASS:-}}"
+[[ -n "$pass" && "$pass" != "CHANGEME" ]] \
+    || { echo "ssh-connect: set SSH_PASS (or $host_var) in $SECRETS" >&2; exit 1; }
 
-SSHPASS="$SSH_PASS" exec sshpass -e ssh "$host"
+SSHPASS="$pass" exec sshpass -e ssh "$host"
