@@ -189,3 +189,6 @@ nvim/lazy-lock.json.backup
 # runtime junk generated inside symlinked dirs
 .tmux/plugins/*/venv/
 nvim/.claude/
+
+### vpn-ssh: real credentials NEVER tracked (secrets.example is the template)
+vpn-ssh/secrets

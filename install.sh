@@ -114,6 +114,17 @@ done
 
 link "$DOTFILES/systemd-user" "$HOME/.config/systemd/user"
 
+# vpn/ssh-connect tools: config dir symlinked whole; real secrets file is
+# gitignored, so bootstrap it from the template on a fresh machine
+link "$DOTFILES/vpn-ssh" "$HOME/.config/vpn-ssh"
+link "$DOTFILES/vpn-ssh/vpn.sh"         "$HOME/.local/bin/vpn"
+link "$DOTFILES/vpn-ssh/ssh_connect.sh" "$HOME/.local/bin/ssh-connect"
+if [[ "$DRY_RUN" == "0" && ! -f "$DOTFILES/vpn-ssh/secrets" ]]; then
+  cp "$DOTFILES/vpn-ssh/secrets.example" "$DOTFILES/vpn-ssh/secrets"
+  chmod 600 "$DOTFILES/vpn-ssh/secrets"
+  warn "vpn-ssh: created secrets from template — fill in $DOTFILES/vpn-ssh/secrets"
+fi
+
 if [[ "$DRY_RUN" == "0" ]]; then
   git -C "$DOTFILES" config core.hooksPath hooks
   log "hooks    core.hooksPath = hooks (gitleaks pre-commit)"
