@@ -43,7 +43,8 @@ case "${1:-}" in
         fi
         ;;
     off)
-        if pkill -f '[n]etExtender'; then
+        # tunnel runs as root — plain pkill can't touch it
+        if sudo pkill -f netExtender; then
             echo "VPN disconnected"
         else
             echo "vpn: no netExtender process found" >&2; exit 1
@@ -54,9 +55,11 @@ case "${1:-}" in
         clear_stale_lock
         mkdir -p "$(dirname "$LOG")"
         echo "Connecting to $VPN_SERVER as $VPN_USER (background)..."
-        sudo -b /usr/sbin/netExtender --auto-reconnect \
+        # pipe Y answers so the cert/trust prompt can't hang a detached session
+        printf 'Y\nY\n' | sudo /usr/sbin/netExtender --auto-reconnect \
             -u "$VPN_USER" -p "$VPN_PASS" -d "$VPN_DOMAIN" "$VPN_SERVER" \
-            >> "$LOG" 2>&1
+            >> "$LOG" 2>&1 &
+        disown
         for _ in $(seq 1 30); do
             is_up && { echo "VPN up."; exit 0; }
             sleep 1
