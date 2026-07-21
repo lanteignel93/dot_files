@@ -55,8 +55,8 @@ case "${1:-}" in
         clear_stale_lock
         mkdir -p "$(dirname "$LOG")"
         echo "Connecting to $VPN_SERVER as $VPN_USER (background)..."
-        # pipe Y answers so the cert/trust prompt can't hang a detached session
-        printf 'Y\nY\n' | sudo /usr/sbin/netExtender --auto-reconnect \
+        # endless Y feed: cert/trust prompt re-appears on every (re)connect
+        yes Y | sudo /usr/sbin/netExtender --auto-reconnect \
             -u "$VPN_USER" -p "$VPN_PASS" -d "$VPN_DOMAIN" "$VPN_SERVER" \
             >> "$LOG" 2>&1 &
         disown
