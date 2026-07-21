@@ -24,6 +24,15 @@ done
 
 is_up() { ip link show ppp0 &>/dev/null; }
 
+# A pid file left by the GUI (owned by us, not root) makes root's netExtender
+# fail with "open lock file failed" under fs.protected_regular — clear it.
+clear_stale_lock() {
+    local pid_file=/tmp/netextender.pid
+    if [[ -O "$pid_file" ]] && ! pgrep -x netExtender >/dev/null; then
+        rm -f "$pid_file"
+    fi
+}
+
 case "${1:-}" in
     status)
         if is_up; then
@@ -42,6 +51,7 @@ case "${1:-}" in
         ;;
     -b)
         is_up && { echo "vpn: already connected"; exit 0; }
+        clear_stale_lock
         mkdir -p "$(dirname "$LOG")"
         echo "Connecting to $VPN_SERVER as $VPN_USER (background)..."
         sudo -b /usr/sbin/netExtender --auto-reconnect \
@@ -56,6 +66,7 @@ case "${1:-}" in
         ;;
     "")
         is_up && { echo "vpn: already connected"; exit 0; }
+        clear_stale_lock
         echo "Connecting to $VPN_SERVER as $VPN_USER (Ctrl-C to disconnect)..."
         exec sudo /usr/sbin/netExtender --auto-reconnect \
             -u "$VPN_USER" -p "$VPN_PASS" -d "$VPN_DOMAIN" "$VPN_SERVER"
