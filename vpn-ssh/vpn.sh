@@ -34,6 +34,16 @@ clear_stale_lock() {
     fi
 }
 
+# Refuse to start while a previous instance is still shutting down
+wait_for_slot() {
+    for _ in $(seq 1 10); do
+        pgrep -x netExtender >/dev/null || return 0
+        sleep 1
+    done
+    echo "vpn: another netExtender instance is still running — try 'vpn off' first" >&2
+    exit 1
+}
+
 case "${1:-}" in
     status)
         if is_up; then
@@ -46,6 +56,12 @@ case "${1:-}" in
     off)
         # tunnel runs as root — plain pkill can't touch it
         if sudo pkill -f netExtender; then
+            # teardown (pppd + SSL logout) takes a few seconds; wait it out so
+            # an immediate reconnect doesn't hit "another instance running"
+            for _ in $(seq 1 15); do
+                pgrep -x netExtender >/dev/null || break
+                sleep 1
+            done
             echo "VPN disconnected"
         else
             echo "vpn: no netExtender process found" >&2; exit 1
@@ -54,6 +70,7 @@ case "${1:-}" in
     -b)
         is_up && { echo "vpn: already connected"; exit 0; }
         clear_stale_lock
+        wait_for_slot
         mkdir -p "$(dirname "$LOG")"
         echo "Connecting to $VPN_SERVER as $VPN_USER (background)..."
         # endless Y feed: cert/trust prompt re-appears on every (re)connect
@@ -72,6 +89,7 @@ case "${1:-}" in
     "")
         is_up && { echo "vpn: already connected"; exit 0; }
         clear_stale_lock
+        wait_for_slot
         echo "Connecting to $VPN_SERVER as $VPN_USER (Ctrl-C to disconnect)..."
         exec sudo /usr/sbin/netExtender --auto-reconnect \
             -u "$VPN_USER" -p "$VPN_PASS" -d "$VPN_DOMAIN" "$VPN_SERVER"
