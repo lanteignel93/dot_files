@@ -6,11 +6,18 @@
     defaultBranch = master
 
 [core]
-	excludesfile = ~/.gitignore      #
-	; sshCommand = "ssh -i ~/.ssh/id_rsa"
+	excludesfile = ~/.gitignore
 
 [github]
 	user = "lanteignel93"
-# This is the crucial part: always use SSH for GitHub
+
+# Always use SSH for GitHub. Host `github.com` maps to the personal key
+# (id_ed25519_personal -> lanteignel93); see ~/.ssh/config.
 [url "git@github.com:"]
     insteadOf = https://github.com/
+
+# Work identity for repos under ~/work/. The included file lives in the
+# private dotfiles repo — this is only a path reference, no work details here.
+# Keep last: later includes override earlier settings.
+[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig.work
