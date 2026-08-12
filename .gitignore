@@ -176,9 +176,14 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
+### systemd units: NOT tracked here — this repo is PUBLIC ###
+# The units name internal hosts, mount points, backup paths and the ntfy alert
+# topic. That is job topology, not code, and it does not belong in a public
+# repo. The live units are real files in ~/.config/systemd/user/ (not symlinks
+# into here), so ignoring them has no effect on the running system.
+systemd-user/
+
 ### Runtime artifacts (config dirs are symlinked into $HOME) ###
-# systemd state: *.target.wants/ are created when units are enabled
-systemd-user/*.target.wants/
 
 # nvim runtime junk that lands inside the symlinked nvim/ dir
 nvim/.netrwhist
