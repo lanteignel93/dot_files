@@ -150,19 +150,24 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-# `eza` on Fedora, `exa` on Ubuntu — pick whichever is installed
-if command -v eza &>/dev/null; then
-    alias ls="eza -al --sort newest"
-elif command -v exa &>/dev/null; then
-    alias ls="exa -al --sort newest"
-fi
-alias tell="whoami; hostname; pwd"
-alias dir="ls -l | grep ^d" 
-alias d="df -h | awk '{print \$6}' | cut -c1-4"
-alias onedrivesync="rclone --vfs-cache-mode writes mount OneDrive: ~/OneDrive &"
 export PATH="$PATH:/opt/nvim/bin"
-alias vim="/usr/local/bin/nvim"
-alias v="/usr/local/bin/nvim"
+
+# Interactive-only: aliases leak into non-interactive zsh (unlike bash) and
+# break scripted callers like Claude Code's Bash tool (`ls -t` != eza's -t).
+if [[ -o interactive ]]; then
+    # `eza` on Fedora, `exa` on Ubuntu — pick whichever is installed
+    if command -v eza &>/dev/null; then
+        alias ls="eza -al --sort newest"
+    elif command -v exa &>/dev/null; then
+        alias ls="exa -al --sort newest"
+    fi
+    alias tell="whoami; hostname; pwd"
+    alias dir="ls -l | grep ^d"
+    alias d="df -h | awk '{print \$6}' | cut -c1-4"
+    alias onedrivesync="rclone --vfs-cache-mode writes mount OneDrive: ~/OneDrive &"
+    alias vim="/usr/local/bin/nvim"
+    alias v="/usr/local/bin/nvim"
+fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completioni
