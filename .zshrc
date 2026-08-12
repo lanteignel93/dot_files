@@ -199,12 +199,19 @@ notify_phone() {
   local message="$1"
 
 
-  # The ntfy.sh topic URL
-  local ntfy_topic="ntfy.sh/laurent-phone-to-computer-182764129"
+  # The topic name IS the credential — anyone who knows it can read your alerts
+  # and publish fakes. It lives in ~/.config/ntfy/topic (chmod 600) so it never
+  # ends up in this repo, which is public.
+  local topic_file="${HOME}/.config/ntfy/topic"
+  if [ ! -r "${topic_file}" ]; then
+    echo "notify_phone: no topic configured at ${topic_file}"
+    return 1
+  fi
+  local ntfy_topic="ntfy.sh/$(cat "${topic_file}")"
 
   # Use curl to send the message as POST data (-d) to the ntfy topic
   # -s makes curl silent (no progress meter)
-  echo "Sending notification: \"${message}\" to ${ntfy_topic}"
+  echo "Sending notification: \"${message}\""
   curl -s -d "${message}" "${ntfy_topic}"
 
   # Check the exit status of curl
