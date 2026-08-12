@@ -1,0 +1,38 @@
+#!/bin/sh
+# tmux status-line CPU + memory, non-blocking.
+#
+# Replaces tmux-cpu-mem-monitor's two Python spawns. psutil.cpu_percent(interval=1)
+# sleeps a full second inside the status-line job, so runs pile up and the bar
+# flickers. CPU here is a delta against the previous call's /proc/stat snapshot,
+# so it returns immediately and still measures the gap between refreshes.
+#
+# usage: tmux-sysstat <cpu-icon> <sep> <mem-icon>
+
+state="${TMPDIR:-/tmp}/tmux-sysstat.$(id -u)"
+
+read -r _ user nice sys idle iowait irq softirq steal _ < /proc/stat
+total=$((user + nice + sys + idle + iowait + irq + softirq + steal))
+idle_all=$((idle + iowait))
+
+prev_total=0
+prev_idle=0
+[ -r "$state" ] && read -r prev_total prev_idle < "$state"
+printf '%s %s\n' "$total" "$idle_all" > "$state"
+
+d_total=$((total - prev_total))
+d_idle=$((idle_all - prev_idle))
+if [ "$d_total" -gt 0 ] && [ "$prev_total" -gt 0 ]; then
+	cpu=$(((100 * (d_total - d_idle) + d_total / 2) / d_total))
+else
+	cpu=0
+fi
+
+# %3d is load-bearing: status-right is right-aligned, so any change in the
+# rendered width shifts the whole chip sideways and blanks the vacated cell.
+# psutil's "3.9%" -> "21.6%" did that ~twice a second, which is what "flashing"
+# actually was. Fixed-width fields keep the chip anchored.
+awk -v cpu="$cpu" -v ic="$1" -v sep="$2" -v im="$3" '
+	/^MemTotal:/     { t = $2 }
+	/^MemAvailable:/ { a = $2 }
+	END { printf "%s %3d%% %s %s %3d%%\n", ic, cpu, sep, im, (t - a) * 100 / t }
+' /proc/meminfo
