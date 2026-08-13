@@ -253,6 +253,13 @@ alias tidal='./tidal/tidal-hifi-5.20.1/tidal-hifi'
     source ~/.local/kitty.app/lib/kitty/shell-integration/zsh/kitty.zsh
 export PATH=$PATH:/home/laurent/.spicetify
 export PATH="$PATH:$HOME/yazi/target/release"
+# Move zsh temp files (and fzf-tab's cache dir, which is ${TMPPREFIX}-fzf-tab-$USER)
+# out of world-writable /tmp: the predictable /tmp/zsh-fzf-tab-$USER name can be
+# pre-claimed by another uid, after which every tab-completion write fails with
+# "permission denied". XDG_RUNTIME_DIR is per-user, mode 700, tmpfs.
+if [[ -n $XDG_RUNTIME_DIR && -d $XDG_RUNTIME_DIR ]]; then
+    export TMPPREFIX="$XDG_RUNTIME_DIR/zsh"
+fi
 autoload -U compinit; compinit
 source ~/somewhere/fzf-tab.plugin.zsh
 
