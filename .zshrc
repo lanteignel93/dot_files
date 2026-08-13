@@ -88,9 +88,9 @@ ENABLE_CORRECTION="true"
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
 plugins=(
     git
-    virtualenvwrapper
+    zsh-autosuggestions
+    zsh-syntax-highlighting
   )
-plugins=(zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -141,7 +141,6 @@ setopt PROMPT_SUBST PROMPT_PERCENT
 
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
-plugins=(zsh-autosuggestions)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
