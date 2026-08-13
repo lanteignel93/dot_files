@@ -1,3 +1,15 @@
+# Shared across machines (personal desktop + work box) via the dotfiles repo.
+# Anything machine-specific belongs in ~/.gitconfig.local, which is NOT tracked.
+#
+# Resolution order — later wins:
+#   1. this file                     shared defaults
+#   2. ~/.gitconfig.local            per-machine override (work box: Hull email)
+#   3. ~/.gitconfig.work             per-directory override (~/work/ only)
+#   4. <repo>/.git/config            per-repo override
+#
+# A missing include path is silently ignored, so both machines can use this
+# file unchanged whether or not the local file exists.
+
 [user]
     name = Laurent Lanteigne
     email = laurent.lanteigne@gmail.com
@@ -11,13 +23,24 @@
 [github]
 	user = "lanteignel93"
 
-# Always use SSH for GitHub. Host `github.com` maps to the personal key
-# (id_ed25519_personal -> lanteignel93); see ~/.ssh/config.
+# Always use SSH for GitHub.
+#
+# WARNING: which ACCOUNT this resolves to is decided per-machine by that box's
+# ~/.ssh/config, not here. On the personal desktop `github.com` is the personal
+# key; on at least one HTAA box it is the WORK key. So an https clone becomes
+# whichever identity that machine's ssh config says — check with
+#   ssh -T git@github.com
+# before assuming.
 [url "git@github.com:"]
     insteadOf = https://github.com/
 
-# Work identity for repos under ~/work/. The included file lives in the
-# private dotfiles repo — this is only a path reference, no work details here.
-# Keep last: later includes override earlier settings.
+# Machine-local overrides. Untracked, different on every box.
+# On the work machine this is where the Hull identity becomes the DEFAULT.
+[include]
+    path = ~/.gitconfig.local
+
+# Directory-scoped work identity. Comes after the machine include on purpose:
+# on the personal box it flips ~/work/ to the Hull identity, and on the work
+# box it simply agrees with the machine default.
 [includeIf "gitdir:~/work/"]
     path = ~/.gitconfig.work
