@@ -340,3 +340,8 @@ export PATH="$HOME/.local/bin:$PATH"
 [[ -f "$HOME/.zsh_secrets" ]] && source "$HOME/.zsh_secrets"
 # Machine-local config (aliases, env) — not tracked in the repo
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# HTAA work filesystems over sshfs (needs VPN). See ~/scripts/work_mount.sh
+alias workmount='~/scripts/work_mount.sh'
+alias workumount='~/scripts/work_mount.sh -u'
+alias workstatus='~/scripts/work_mount.sh -s'
