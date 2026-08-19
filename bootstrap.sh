@@ -143,22 +143,38 @@ fi
 #   kitty  — the distro build lags and does not ship `kitten`, which
 #            ~/.local/bin/kitten and the ssh helper rely on.
 # =============================================================================
+# Layout mirrors this machine exactly:
+#   /opt/nvim/nvim/          extracted release
+#   /usr/local/bin/nvim ->   /opt/nvim/nvim/bin/nvim
+# The symlink is what makes the hardcoded `alias vim="/usr/local/bin/nvim"`
+# in .zshrc resolve. (.zshrc also puts /opt/nvim/bin on PATH; that directory is
+# empty and does nothing — harmless, kept only so the two boxes stay identical.)
+#
+# NVIM_CHANNEL=nightly to track prereleases instead of stable releases.
+NVIM_CHANNEL="${NVIM_CHANNEL:-stable}"
+NVIM_PREFIX=/opt/nvim/nvim
 if ! have nvim; then
-  log "Installing neovim (upstream tarball)..."
+  log "Installing neovim ($NVIM_CHANNEL)..."
   tmp=$(mktemp -d)
-  # Upstream renamed the asset to nvim-linux-x86_64 in 2024; try both.
+  # Upstream renamed the asset to nvim-linux-x86_64 in 2024; older tags use
+  # nvim-linux64, so try both rather than pinning to one era.
   for asset in nvim-linux-x86_64 nvim-linux64; do
-    if curl -sSLf "https://github.com/neovim/neovim/releases/latest/download/${asset}.tar.gz" \
+    if curl -sSLf "https://github.com/neovim/neovim/releases/download/${NVIM_CHANNEL}/${asset}.tar.gz" \
          -o "$tmp/nvim.tar.gz" 2>/dev/null; then
       tar -xzf "$tmp/nvim.tar.gz" -C "$tmp" 2>/dev/null || continue
       d=$(find "$tmp" -maxdepth 1 -type d -name 'nvim-linux*' | head -1)
-      [[ -n "$d" ]] && sudo cp -a "$d"/. /usr/local/ 2>/dev/null && break
+      if [[ -n "$d" ]]; then
+        sudo mkdir -p "$NVIM_PREFIX" \
+          && sudo cp -a "$d"/. "$NVIM_PREFIX"/ \
+          && sudo ln -sfn "$NVIM_PREFIX/bin/nvim" /usr/local/bin/nvim \
+          && break
+      fi
     fi
   done
   rm -rf "$tmp"
-  have nvim && log "  nvim $(nvim --version | head -1)" || note_fail "neovim"
+  have nvim && log "  installed $(nvim --version | head -1)" || note_fail "neovim"
 else
-  log "neovim already present: $(command -v nvim)"
+  log "neovim already present: $(nvim --version | head -1)"
 fi
 
 if ! have kitty && [[ ! -x "$HOME/.local/bin/kitty" ]]; then
