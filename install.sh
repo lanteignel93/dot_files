@@ -29,9 +29,9 @@ if [[ -n "$(git -C "$DOTFILES" status --porcelain 2>/dev/null)" ]]; then
   fail "$DOTFILES has uncommitted changes. Commit or stash, then rerun."
 fi
 
-if [[ "$DRY_RUN" == "0" ]]; then
-  mkdir -p "$BACKUP_DIR"
-fi
+# Created lazily by ensure_backup_dir, not up front — an unconditional mkdir
+# left an empty dotfiles-backup-<stamp>/ behind on every clean re-run.
+ensure_backup_dir() { [[ -d "$BACKUP_DIR" ]] || mkdir -p "$BACKUP_DIR"; }
 
 # Usage: link <src-in-repo> <dest-in-home>
 link() {
@@ -78,6 +78,7 @@ link() {
       log "DRY-RUN  would backup+link $dest"
       return 0
     fi
+    ensure_backup_dir
     local rel="${dest#$HOME/}"
     mkdir -p "$BACKUP_DIR/$(dirname "$rel")"
     mv "$dest" "$BACKUP_DIR/$rel"
@@ -112,7 +113,19 @@ for app in nvim kitty alacritty awesome polybar nitrogen lazygit htop neofetch b
   link "$DOTFILES/$app" "$HOME/.config/$app"
 done
 
-link "$DOTFILES/systemd-user" "$HOME/.config/systemd/user"
+# Global git ignore. .gitconfig sets core.excludesfile=~/.gitignore, which
+# pointed at a file that was never tracked — so the rule silently vanished on
+# any new machine.
+link "$DOTFILES/gitignore_global" "$HOME/.gitignore"
+
+# systemd user units moved to the PRIVATE repo on 2026-08-18: this repo is
+# public, and the units name internal hosts, mount points, backup paths and the
+# ntfy alert topic. Linking from $DOTFILES here silently did nothing.
+if [[ -d "$PRIVATE/systemd-user" ]]; then
+  link "$PRIVATE/systemd-user" "$HOME/.config/systemd/user"
+else
+  warn "no $PRIVATE/systemd-user — clone the private repo to get the timers"
+fi
 
 # vpn/ssh-connect tools: config dir symlinked whole; real secrets file is
 # gitignored, so bootstrap it from the template on a fresh machine
@@ -131,9 +144,50 @@ if [[ "$DRY_RUN" == "0" ]]; then
   command -v gitleaks >/dev/null 2>&1 || warn "gitleaks not on PATH — pre-commit hook will refuse commits until installed"
 fi
 
+# ---------------------------------------------------------------------------
+# ssh config is PER MACHINE, not shared.
+#
+# Each box holds its own key material for the same identities (private keys
+# never travel), so one shared config would point at key files that do not
+# exist on the other machine. The private repo keeps one config per host:
+#   ssh/laurent-dell-desktop.config
+#   ssh/htaa-work.config
+#
+# Override the choice with SSH_CONFIG_NAME=<name> for a machine not listed.
+# ---------------------------------------------------------------------------
 if [[ "$LINK_SSH" == "1" ]]; then
   [[ -d "$PRIVATE/.git" ]] || fail "$PRIVATE is not a git repo (needed for ssh symlink)"
-  link "$PRIVATE/ssh/config" "$HOME/.ssh/config"
+  ssh_name="${SSH_CONFIG_NAME:-$(hostname)}"
+  ssh_src="$PRIVATE/ssh/${ssh_name}.config"
+  if [[ -f "$ssh_src" ]]; then
+    link "$ssh_src" "$HOME/.ssh/config"
+  else
+    warn "no ssh config for host '${ssh_name}' in $PRIVATE/ssh/"
+    warn "  available: $(cd "$PRIVATE/ssh" 2>/dev/null && ls *.config 2>/dev/null | sed 's/\.config$//' | tr '\n' ' ')"
+    warn "  pick one with: SSH_CONFIG_NAME=<name> LINK_SSH=1 bash $0"
+    warn "  or add ${ssh_name}.config to the private repo for this machine."
+    CONFLICTS=$((CONFLICTS + 1))
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Machine-local git identity. NOT tracked anywhere — it is what makes the
+# shared .gitconfig safe to use on both personal and work machines.
+# Absent, git falls back to the personal address for everything.
+# ---------------------------------------------------------------------------
+if [[ "$DRY_RUN" == "0" && ! -f "$HOME/.gitconfig.local" ]]; then
+  cat > "$HOME/.gitconfig.local" <<'GITLOCAL'
+# Machine-local git config — deliberately untracked, differs per machine.
+# The shared ~/.gitconfig includes this file, and later values win, so
+# anything set here overrides the shared defaults on THIS box only.
+#
+# On a work machine, make the work identity the default:
+#   [user]
+#       email = laurent@hulltactical.com
+#   [github]
+#       user = "laurentHull93"
+GITLOCAL
+  log "created  ~/.gitconfig.local (stub — edit if this is a work machine)"
 fi
 
 log ""
