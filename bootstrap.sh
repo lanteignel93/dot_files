@@ -59,7 +59,7 @@ log "Detected: ${PRETTY_NAME:-$DISTRO}  (family: $FAMILY)"
 if [[ "$FAMILY" == "debian" ]]; then
   PKG_UPDATE=(sudo apt-get update -y)
   PKG_INSTALL=(sudo apt-get install -y)
-  CORE=(zsh tmux git curl wget gh neovim kitty build-essential pkg-config)
+  CORE=(zsh tmux git curl wget gh build-essential pkg-config)
   CLI_QOL=(fzf ripgrep fd-find bat exa zoxide duf tree jq stow
            htop btop neofetch cmatrix xclip xsel xdotool
            unzip p7zip-full net-tools dnsutils)
@@ -76,7 +76,7 @@ elif [[ "$FAMILY" == "fedora" ]]; then
   PKG_UPDATE=(sudo dnf -y makecache)
   PKG_INSTALL=(sudo dnf install -y --skip-unavailable)
   # gh and rclone are in the standard Fedora repos; no extra COPR needed.
-  CORE=(zsh tmux git curl wget gh neovim kitty gcc gcc-c++ make pkgconf-pkg-config)
+  CORE=(zsh tmux git curl wget gh gcc gcc-c++ make pkgconf-pkg-config)
   CLI_QOL=(fzf ripgrep fd-find bat eza zoxide duf tree jq stow
            htop btop neofetch cmatrix xclip xsel xdotool
            unzip p7zip bind-utils net-tools)
@@ -129,6 +129,47 @@ if [[ "$SKIP_APT" == "0" ]]; then
   [[ -x /usr/bin/fdfind ]] && ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
 else
   log "SKIP_APT=1 — skipping package installation"
+fi
+
+# =============================================================================
+# 1b. neovim and kitty — from upstream, NOT from the package manager
+#
+# Both are deliberately excluded from the package lists above:
+#
+#   neovim — Ubuntu 22.04 ships 0.6. The nvim config uses lazy.nvim, which
+#            needs 0.9+, so the distro package produces an editor that errors
+#            on startup. Installed to /usr/local so it matches the hardcoded
+#            `alias vim="/usr/local/bin/nvim"` in .zshrc.
+#   kitty  — the distro build lags and does not ship `kitten`, which
+#            ~/.local/bin/kitten and the ssh helper rely on.
+# =============================================================================
+if ! have nvim; then
+  log "Installing neovim (upstream tarball)..."
+  tmp=$(mktemp -d)
+  # Upstream renamed the asset to nvim-linux-x86_64 in 2024; try both.
+  for asset in nvim-linux-x86_64 nvim-linux64; do
+    if curl -sSLf "https://github.com/neovim/neovim/releases/latest/download/${asset}.tar.gz" \
+         -o "$tmp/nvim.tar.gz" 2>/dev/null; then
+      tar -xzf "$tmp/nvim.tar.gz" -C "$tmp" 2>/dev/null || continue
+      d=$(find "$tmp" -maxdepth 1 -type d -name 'nvim-linux*' | head -1)
+      [[ -n "$d" ]] && sudo cp -a "$d"/. /usr/local/ 2>/dev/null && break
+    fi
+  done
+  rm -rf "$tmp"
+  have nvim && log "  nvim $(nvim --version | head -1)" || note_fail "neovim"
+else
+  log "neovim already present: $(command -v nvim)"
+fi
+
+if ! have kitty && [[ ! -x "$HOME/.local/bin/kitty" ]]; then
+  log "Installing kitty (upstream installer)..."
+  curl -sSL https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin >/dev/null 2>&1 \
+    || note_fail "kitty"
+  # The installer drops kitty.app in ~/.local; these are the launchers.
+  ln -sf "$HOME/.local/kitty.app/bin/kitty"  "$HOME/.local/bin/kitty"  2>/dev/null
+  ln -sf "$HOME/.local/kitty.app/bin/kitten" "$HOME/.local/bin/kitten" 2>/dev/null
+else
+  log "kitty already present: $(command -v kitty || echo "$HOME/.local/bin/kitty")"
 fi
 
 # =============================================================================
