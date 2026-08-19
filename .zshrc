@@ -86,8 +86,12 @@ ENABLE_CORRECTION="true"
 # Add wisely, as too many plugins slow down shell startup.
 #
 export VIRTUALENVWRAPPER_PYTHON=$(which python3)
+# Order matters: fzf-tab must come BEFORE zsh-autosuggestions, and
+# zsh-syntax-highlighting must be LAST — it wraps the line editor and anything
+# loaded after it will not be highlighted.
 plugins=(
     git
+    fzf-tab                 # fzf-driven tab completion (cd, kill, git, ssh, ...)
     zsh-autosuggestions
     zsh-syntax-highlighting
   )
