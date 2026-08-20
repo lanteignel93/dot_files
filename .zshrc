@@ -264,7 +264,22 @@ if [[ -n $XDG_RUNTIME_DIR && -d $XDG_RUNTIME_DIR ]]; then
     export TMPPREFIX="$XDG_RUNTIME_DIR/zsh"
 fi
 autoload -U compinit; compinit
-source ~/somewhere/fzf-tab.plugin.zsh
+
+# fzf-tab is normally loaded by the oh-my-zsh plugins array above, from
+# $ZSH_CUSTOM/plugins/fzf-tab. The HTAA box keeps it in ~/somewhere instead,
+# where oh-my-zsh can't find it — hence this fallback. Guarded on the widget so
+# it never double-loads (double-loading here would also break the ordering the
+# comment above depends on) and never errors on a box that has neither copy.
+if (( ! $+functions[fzf-tab-complete] )); then
+    for _fzf_tab_plugin in \
+        "$ZSH_CUSTOM/plugins/fzf-tab/fzf-tab.plugin.zsh" \
+        "$HOME/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" \
+        "$HOME/somewhere/fzf-tab.plugin.zsh"
+    do
+        [[ -r $_fzf_tab_plugin ]] && { source "$_fzf_tab_plugin"; break; }
+    done
+    unset _fzf_tab_plugin
+fi
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
