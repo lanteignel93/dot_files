@@ -55,8 +55,19 @@
 
   ################################[ os_icon: os identifier ]##################################
   # CHANGED the icon to a new symbol and kept the color lavender.
-  typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='󰣇 shortVIX93'
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND="$darkvoid_lavender"
+  #
+  # This used to be the literal string '󰣇 shortVIX93'. Because .p10k.zsh is
+  # shared across every machine, that meant an ssh session on an HTAA box looked
+  # identical to the desktop — easy to run the wrong command on the wrong host.
+  # Keep the handle on the desktop; show the real hostname everywhere else, in a
+  # different colour so a remote box is obvious at a glance.
+  if [[ "${(%):-%m}" == "laurent-dell-desktop" ]]; then
+    typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='󰣇 shortVIX93'
+    typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND="$darkvoid_lavender"
+  else
+    typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='󰣇 %m'
+    typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND="$darkvoid_red"
+  fi
   typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=''
 
   ##################################[ dir: current directory ]##################################
