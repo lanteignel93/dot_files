@@ -16,6 +16,8 @@
 #   SKIP_APT=1     skip the apt section (already provisioned)
 #   SKIP_HEAVY=1   skip texlive, virtualbox and other large optional installs
 #   SKIP_LANG=1    skip rust / node / uv toolchains
+#   NVIM_VERSION=  neovim release tag to converge on (default below, e.g. v0.12.4).
+#                  Re-running bootstrap after bumping it upgrades that box.
 
 set -uo pipefail        # NOT -e: one failed optional install must not abort the run
 
@@ -150,31 +152,82 @@ fi
 # in .zshrc resolve. (.zshrc also puts /opt/nvim/bin on PATH; that directory is
 # empty and does nothing — harmless, kept only so the two boxes stay identical.)
 #
-# NVIM_CHANNEL=nightly to track prereleases instead of stable releases.
-NVIM_CHANNEL="${NVIM_CHANNEL:-stable}"
+# NVIM_VERSION pins the release tag and is the single knob that upgrades the
+# whole fleet: bump it here, re-run bootstrap on each box. 'stable' and
+# 'nightly' also work (they are just floating tags upstream) but a pinned
+# vX.Y.Z is preferred, so every machine lands on the same build.
+#
+# This block UPGRADES as well as installs. It used to be `if ! have nvim`,
+# which meant a box that already had any nvim was skipped forever — that is how
+# the fleet ended up spread across year-old nightlies (0.12.0-dev-857 here,
+# 0.12.0-dev-874 on HTAA) while this script reported "already present".
+NVIM_VERSION="${NVIM_VERSION:-${NVIM_CHANNEL:-v0.12.4}}"
 NVIM_PREFIX=/opt/nvim/nvim
-if ! have nvim; then
-  log "Installing neovim ($NVIM_CHANNEL)..."
+
+# True when nvim is missing, or older than $NVIM_VERSION. Never downgrades.
+# A -dev build of the target counts as older: prereleases sort before release.
+nvim_outdated() {
+  have nvim || return 0
+  local want cur base first
+  want="${NVIM_VERSION#v}"
+  case "$want" in stable|nightly) return 0 ;; esac   # floating tags: always refresh
+  cur=$(nvim --version 2>/dev/null | head -1 | sed -E 's/^NVIM v?//')
+  [[ -z "$cur" ]] && return 0
+  [[ "$cur" == "$want" ]] && return 1                # already exactly right
+  base="${cur%%-*}"                                  # 0.12.0-dev-857+g46 -> 0.12.0
+  [[ "$base" == "$want" ]] && return 0               # x.y.z-dev is older than x.y.z
+  first=$(printf '%s\n%s\n' "$base" "$want" | sort -V | head -1)
+  [[ "$first" == "$base" ]]                          # current older -> upgrade
+}
+
+if nvim_outdated; then
+  if have nvim; then
+    log "Upgrading neovim: $(nvim --version | head -1) -> $NVIM_VERSION"
+  else
+    log "Installing neovim $NVIM_VERSION..."
+  fi
   tmp=$(mktemp -d)
   # Upstream renamed the asset to nvim-linux-x86_64 in 2024; older tags use
   # nvim-linux64, so try both rather than pinning to one era.
   for asset in nvim-linux-x86_64 nvim-linux64; do
-    if curl -sSLf "https://github.com/neovim/neovim/releases/download/${NVIM_CHANNEL}/${asset}.tar.gz" \
+    if curl -sSLf "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${asset}.tar.gz" \
          -o "$tmp/nvim.tar.gz" 2>/dev/null; then
       tar -xzf "$tmp/nvim.tar.gz" -C "$tmp" 2>/dev/null || continue
       d=$(find "$tmp" -maxdepth 1 -type d -name 'nvim-linux*' | head -1)
-      if [[ -n "$d" ]]; then
-        sudo mkdir -p "$NVIM_PREFIX" \
-          && sudo cp -a "$d"/. "$NVIM_PREFIX"/ \
-          && sudo ln -sfn "$NVIM_PREFIX/bin/nvim" /usr/local/bin/nvim \
-          && break
+      [[ -n "$d" && -x "$d/bin/nvim" ]] || continue
+      # Run the downloaded binary BEFORE it replaces a working editor. A bad
+      # asset (wrong arch, truncated download) would otherwise leave the box
+      # with no usable nvim.
+      "$d/bin/nvim" --version >/dev/null 2>&1 \
+        || { warn "downloaded nvim does not run here; keeping current version"; continue; }
+
+      # Keep exactly one rollback copy, then converge on the /opt layout.
+      # Two layouts exist in the fleet: this box has the /opt symlink, the HTAA
+      # boxes have a real binary sitting at /usr/local/bin/nvim. Both end up
+      # identical after this runs.
+      if [[ -d "$NVIM_PREFIX" ]]; then
+        [[ -d "${NVIM_PREFIX}.bak" ]] && sudo rm -rf "${NVIM_PREFIX}.bak"
+        sudo mv "$NVIM_PREFIX" "${NVIM_PREFIX}.bak"
+        log "  previous install kept at ${NVIM_PREFIX}.bak"
+      elif [[ -f /usr/local/bin/nvim && ! -L /usr/local/bin/nvim ]]; then
+        sudo mv /usr/local/bin/nvim /usr/local/bin/nvim.bak
+        log "  previous binary kept at /usr/local/bin/nvim.bak"
       fi
+
+      sudo mkdir -p "$NVIM_PREFIX" \
+        && sudo cp -a "$d"/. "$NVIM_PREFIX"/ \
+        && sudo ln -sfn "$NVIM_PREFIX/bin/nvim" /usr/local/bin/nvim \
+        && break
     fi
   done
   rm -rf "$tmp"
-  have nvim && log "  installed $(nvim --version | head -1)" || note_fail "neovim"
+  if have nvim && ! nvim_outdated; then
+    log "  installed $(nvim --version | head -1)"
+  else
+    note_fail "neovim ($NVIM_VERSION)"
+  fi
 else
-  log "neovim already present: $(nvim --version | head -1)"
+  log "neovim already current: $(nvim --version | head -1)"
 fi
 
 if ! have kitty && [[ ! -x "$HOME/.local/bin/kitty" ]]; then
