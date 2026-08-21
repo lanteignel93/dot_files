@@ -45,13 +45,23 @@ kitty terminfo entry, so the first thing you'll see is:
 missing or unsuitable terminal: xterm-kitty
 ```
 
-tmux, vim and anything else curses-based refuse to start. Nothing is broken —
-the remote just doesn't have the terminal description.
+tmux, vim, nano and anything else curses-based refuse to start. Nothing is
+broken — the remote just doesn't have the terminal description. Expect to meet
+it more than once per box: once on tmux, again the first time you open an editor.
 
-**Best: connect with kitty's own wrapper**, which ships terminfo across for you:
+**Unblock yourself immediately** — this is the first thing to reach for:
 
 ```sh
-kitten ssh 141htaaprd5
+export TERM=xterm-256color
+```
+
+Good for the rest of the login. Everything below is about not needing it again.
+
+**Best: connect with kitty's own wrapper**, which ships terminfo across for you
+every time, on every box, with nothing to remember:
+
+```sh
+kitten ssh NEWBOX
 ```
 
 **Or fix the box once** — with sudo:
@@ -60,16 +70,17 @@ kitten ssh 141htaaprd5
 sudo apt install -y kitty-terminfo
 ```
 
-…or without, pushed from a box that has it:
+…or without sudo, pushed from a box that has it:
 
 ```sh
-infocmp -a xterm-kitty | ssh NEWBOX 'tic -x -o ~/.terminfo /dev/stdin'
+infocmp -a xterm-kitty | ssh NEWBOX 'mkdir -p ~/.terminfo && tic -x -o ~/.terminfo /dev/stdin'
 ```
 
-**One-off escape hatch** if you just need a shell right now:
+That last one needs `tic`, which lives in **`ncurses-bin`** and is often absent
+from a minimal server image. If the push appears to do nothing, that's why:
 
 ```sh
-TERM=xterm-256color tmux
+ssh NEWBOX 'command -v tic || sudo apt install -y ncurses-bin'
 ```
 
 ### 1. Prereqs
@@ -118,31 +129,42 @@ The real config is per-machine and lives in `dotfiles-private/ssh/`, which you
 cannot clone yet, because cloning it needs the config. Break the loop with a
 minimal one:
 
+Deliberately **not** a heredoc. `<<'EOF'` only terminates when `EOF` sits at
+column 0, so a paste that picks up any leading whitespace leaves you stuck at a
+`>` continuation prompt with a half-written file — which is exactly what happened
+provisioning prd4. `printf` survives being pasted at any indentation.
+
 ```sh
-cat > ~/.ssh/config <<'EOF'
-# Minimal bootstrap config. Replaced by the private repo's per-machine file
-# once dotfiles-private is cloned (install.sh symlinks it).
-
-Host github.com
-    User git
-    IdentityFile ~/.ssh/id_ed25519_github_personal
-    IdentitiesOnly yes
-
-Host github-htaabp
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/id_ed25519_github_htaabp
-    IdentitiesOnly yes
-
-Host git.hulltactical.net gitlab-hull
-    HostName git.hulltactical.net
-    User git
-    IdentityFile ~/.ssh/id_ed25519_gitlab_hull
-    IdentitiesOnly yes
-EOF
+printf '%s\n' \
+'# Minimal bootstrap config. Replaced by the private repo per-machine file' \
+'# once dotfiles-private is cloned (install.sh symlinks it).' \
+'' \
+'Host github.com' \
+'    HostName github.com' \
+'    User git' \
+'    IdentityFile ~/.ssh/id_ed25519_github_personal' \
+'    IdentitiesOnly yes' \
+'' \
+'Host github-htaabp github-work github-new' \
+'    HostName github.com' \
+'    User git' \
+'    IdentityFile ~/.ssh/id_ed25519_github_htaabp' \
+'    IdentitiesOnly yes' \
+'' \
+'Host git.hulltactical.net gitlab-hull' \
+'    HostName git.hulltactical.net' \
+'    User git' \
+'    IdentityFile ~/.ssh/id_ed25519_gitlab_hull' \
+'    IdentitiesOnly yes' \
+> ~/.ssh/config
 
 chmod 600 ~/.ssh/config
+cat ~/.ssh/config          # confirm it wrote cleanly before relying on it
 ```
+
+> **Rule for this file:** every command here must survive being pasted into a
+> terminal that mangles whitespace. No heredocs, nothing column-sensitive.
+> If you're stuck at a `>` prompt, Ctrl-C and check for an indented terminator.
 
 **Verify before continuing. This gate is the whole point of the runbook:**
 
