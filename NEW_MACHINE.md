@@ -36,6 +36,42 @@ the private repo, which is SSH-only.
 
 ## Order
 
+### 0. Connect — terminfo first, or tmux won't run
+
+You connect from kitty, which exports `TERM=xterm-kitty`. A fresh box has no
+kitty terminfo entry, so the first thing you'll see is:
+
+```
+missing or unsuitable terminal: xterm-kitty
+```
+
+tmux, vim and anything else curses-based refuse to start. Nothing is broken —
+the remote just doesn't have the terminal description.
+
+**Best: connect with kitty's own wrapper**, which ships terminfo across for you:
+
+```sh
+kitten ssh 141htaaprd5
+```
+
+**Or fix the box once** — with sudo:
+
+```sh
+sudo apt install -y kitty-terminfo
+```
+
+…or without, pushed from a box that has it:
+
+```sh
+infocmp -a xterm-kitty | ssh NEWBOX 'tic -x -o ~/.terminfo /dev/stdin'
+```
+
+**One-off escape hatch** if you just need a shell right now:
+
+```sh
+TERM=xterm-256color tmux
+```
+
 ### 1. Prereqs
 
 ```sh
@@ -156,17 +192,46 @@ it only takes effect on a fresh login.
 
 ---
 
+## Not covered by bootstrap — the secrets
+
+`bootstrap.sh` gets you a working **environment**. It does not get you a working
+**identity**, and it cannot give you access to encrypted data. None of the
+following live in any repo — by design — so a box that bootstraps perfectly is
+still incomplete until these are placed by hand.
+
+| File / action | What breaks without it |
+|---|---|
+| `~/.gitconfig.local` | commits stamped with the wrong identity — silently |
+| `~/.config/ntfy/topic` | phone alerts do nothing, with no error |
+| `~/.config/age/keys.txt` | **cannot decrypt any usb2 vault snapshot** |
+| `~/dotfiles/vpn-ssh/secrets` | `vpn` / `ssh-connect` fail (install.sh only copies an empty template) |
+| `~/.config/git-mirror/gitlab-token` | GitLab repo discovery for mirroring |
+| `gh auth login` | `gh` unusable |
+| systemd timers | installed but **deliberately not enabled** — they hardcode `/home/laurent` paths and USB mounts. Review before switching any on |
+| your desktop key in the new box's `~/.ssh/authorized_keys` | every future remote check needs a password |
+
+**The `age` key is the one with teeth.** Per `Vault Backup and Recovery`, it is
+a single point of failure: it lives on the laptop and on usb1, and losing both
+makes every usb2 snapshot permanently unreadable. There is no reset. Only place
+it on a machine that actually needs to read backups.
+
+Two of these fail **silently** — a wrong git identity and a dead ntfy topic both
+look exactly like success. Verify them rather than assuming.
+
 ## Verify it actually worked
 
 Bootstrap reporting "done" is not evidence. Check outcomes:
 
 ```sh
 ssh -T git@github.com                      # Hi lanteignel93!
+git config --get user.email                # the RIGHT identity for this box
 ls -la ~/.zshrc                            # symlink -> ~/dotfiles/.zshrc
 ls ~/.local/share/nvim/lazy | wc -l        # ~60, not 0
 ls ~/.tmux/plugins/tpm                     # not empty
 ls -d ~/dotfiles-private/.git              # private repo landed
 nvim --version | head -1                   # v0.12.4
+tmux -V                                    # runs at all -> terminfo is fine
+echo $EDITOR                               # nvim, not empty
 echo $SHELL                                # or: log out, log in, expect zsh
 ```
 
