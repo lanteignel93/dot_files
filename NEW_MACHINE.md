@@ -66,14 +66,59 @@ tar -C ~ -czf - \
 | ssh NEWBOX 'mkdir -p ~/.ssh && chmod 700 ~/.ssh && tar -C ~ -xzf -'
 ```
 
-On an **HTAA box, drop the personal pair** — that puts your personal GitHub
-identity on company hardware you don't control.
+On an **HTAA box** you'd rather not put the personal pair on company hardware —
+but note that `dot_files` and `private_configs` both live under `lanteignel93`,
+and the `insteadOf` rewrite sends them over SSH, so without the personal key you
+cannot even `git pull` your own dotfiles there. Make that trade knowingly.
+
+### 2b. Write a minimal `~/.ssh/config` — the step everyone forgets
+
+**Copying keys is not enough.** The keys are named `id_ed25519_github_personal`,
+`…_htaabp`, `…_gitlab_hull`. SSH only tries `id_rsa` / `id_ecdsa` / `id_ed25519`
+by default, so with no config it offers **nothing** and GitHub answers
+`Permission denied (publickey)` — looking exactly like a missing or bad key.
+
+The real config is per-machine and lives in `dotfiles-private/ssh/`, which you
+cannot clone yet, because cloning it needs the config. Break the loop with a
+minimal one:
+
+```sh
+cat > ~/.ssh/config <<'EOF'
+# Minimal bootstrap config. Replaced by the private repo's per-machine file
+# once dotfiles-private is cloned (install.sh symlinks it).
+
+Host github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github_personal
+    IdentitiesOnly yes
+
+Host github-htaabp
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github_htaabp
+    IdentitiesOnly yes
+
+Host git.hulltactical.net gitlab-hull
+    HostName git.hulltactical.net
+    User git
+    IdentityFile ~/.ssh/id_ed25519_gitlab_hull
+    IdentitiesOnly yes
+EOF
+
+chmod 600 ~/.ssh/config
+```
 
 **Verify before continuing. This gate is the whole point of the runbook:**
 
 ```sh
 ssh -T git@github.com          # -> Hi lanteignel93!
+ssh -T git@github-htaabp       # -> Hi laurentHull93!
 ```
+
+If `github.com` greets you as the **wrong account**, that box is answering with
+a key held by the agent rather than the one configured. `IdentitiesOnly yes`
+restricts ssh to configured keys but does not choose among what the agent
+offers — add `IdentityAgent none` to that Host block to actually pin it.
 
 ### 3. Clone over SSH
 
@@ -132,6 +177,8 @@ echo $SHELL                                # or: log out, log in, expect zsh
 | Trap | Symptom | Why |
 |---|---|---|
 | **`insteadOf` with no key** | `Permission denied (publickey)` on an https clone | `.gitconfig` rewrites https→SSH; bites everything after step 6 |
+| **Keys copied, no `~/.ssh/config`** | `Permission denied (publickey)` *with the keys sitting right there* | keys are named `id_ed25519_github_personal` etc.; ssh only tries `id_rsa`/`id_ecdsa`/`id_ed25519` by default, so it offers nothing. See step 2b |
+| **Wrong account answers** | `ssh -T git@github.com` greets the other identity | `IdentitiesOnly yes` limits ssh to configured keys but doesn't override what the agent offers first — add `IdentityAgent none` |
 | **oh-my-zsh overwrites `.zshrc`** | `install.sh` logs CONFLICT, your config never links, shell looks stock | its installer writes a template `.zshrc`; fixed with `KEEP_ZSHRC=yes` |
 | **`chsh` on an LDAP box** | `user 'x' does not exist in /etc/passwd` | `chsh` only edits `/etc/passwd`; use the `.bash_profile` handoff |
 | **`exa` on Ubuntu 24.04** | `pkg: exa` fails | 24.04 replaced it with the `eza` fork; bootstrap now picks per release |
