@@ -104,12 +104,18 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+# Preferred editor for local and remote sessions.
+# nvim everywhere (the stock oh-my-zsh block split local/ssh and used mvim, a
+# macOS-only editor). Fall back to vim on a box where nvim is not installed yet
+# — during bootstrap, for one. Leaving EDITOR unset is worse than it sounds:
+# `$EDITOR file` then expands to just `file`, the shell tries to EXECUTE it, and
+# you get a bare "Permission denied" that looks nothing like a missing variable.
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR='nvim'
+elif command -v vim >/dev/null 2>&1; then
+    export EDITOR='vim'
+fi
+export VISUAL="$EDITOR"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
