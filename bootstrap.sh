@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 # Fresh-machine bootstrap. Idempotent — safe to re-run.
 #
-# Usage on a fresh Ubuntu install:
-#   git clone git@github.com:lanteignel93/dot_files.git ~/dotfiles
-#   bash ~/dotfiles/bootstrap.sh
+# FULL RUNBOOK: NEW_MACHINE.md — read it before provisioning a box. The order
+# there matters; doing it wrong is recoverable but wastes an hour.
+#
+# Usage on a fresh install — KEYS FIRST, then clone over SSH:
+#   1. sudo apt install -y git curl        (or dnf)
+#   2. get ~/.ssh keys onto the box; verify:  ssh -T git@github.com
+#   3. git clone git@github.com:lanteignel93/dot_files.git ~/dotfiles
+#   4. bash ~/dotfiles/bootstrap.sh
 #
 # Then log out and back in to land in zsh.
+#
+# Cloning over https instead works for exactly one command: .gitconfig rewrites
+# https://github.com/ to SSH, so once install.sh links it, https is dead until a
+# key exists. See NEW_MACHINE.md § "The one rule".
 #
 # Division of labour:
 #   bootstrap.sh  installs SOFTWARE (packages, toolchains, plugins) — run once
@@ -36,10 +45,51 @@ have() { command -v "$1" >/dev/null 2>&1; }
 FAILURES=()
 note_fail() { FAILURES+=("$1"); warn "$1"; }
 
+# -----------------------------------------------------------------------------
+# Credential preflight — MUST run before anything clones from GitHub.
+#
+# The tracked .gitconfig contains:
+#     [url "git@github.com:"] insteadOf = https://github.com/
+# which rewrites EVERY https GitHub URL to SSH. That is correct on an
+# established box, but it means that once install.sh (step 6) symlinks the
+# config, https access dies until a key exists. On 2026-08-21 that took out the
+# private repo, TPM and all 59 nvim plugins in one run, each failing with an
+# unhelpful "Permission denied (publickey)" long after the real cause.
+#
+# So: detect the key ONCE, up front, and route every clone accordingly.
+# `gitc` is git with the rewrite bypassed when we have no key to satisfy it.
+# -----------------------------------------------------------------------------
+if ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 \
+      -T git@github.com 2>&1 | grep -q 'successfully authenticated'; then
+  HAVE_GH_KEY=1
+else
+  HAVE_GH_KEY=0
+fi
+
+if ((HAVE_GH_KEY)); then
+  gitc() { git "$@"; }
+  nvimc() { nvim "$@"; }
+else
+  gitc() { GIT_CONFIG_GLOBAL=/dev/null git "$@"; }
+  nvimc() { GIT_CONFIG_GLOBAL=/dev/null nvim "$@"; }
+fi
+
 [[ "$EUID" -ne 0 ]] || fail "Run as your user, not root."
 [[ -d "$DOTFILES/.git" ]] || fail "$DOTFILES not found. Clone the repo there first."
 
 mkdir -p "$HOME/.local/bin"
+
+if ((HAVE_GH_KEY)); then
+  log "GitHub SSH key: OK"
+else
+  warn "No working GitHub SSH key on this box."
+  warn "  Everything that clones from GitHub will use https with the .gitconfig"
+  warn "  rewrite bypassed. That works, but the PRIVATE repo is SSH-only and"
+  warn "  will be skipped (ssh config + systemd units come from it)."
+  warn "  Fix it and re-run — see NEW_MACHINE.md, step 2:"
+  warn "    ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_github_personal"
+  warn "    then add the .pub at https://github.com/settings/keys"
+fi
 
 # =============================================================================
 # 0. Distro detection
@@ -62,7 +112,11 @@ if [[ "$FAMILY" == "debian" ]]; then
   PKG_UPDATE=(sudo apt-get update -y)
   PKG_INSTALL=(sudo apt-get install -y)
   CORE=(zsh tmux git curl wget gh build-essential pkg-config)
-  CLI_QOL=(fzf ripgrep fd-find bat exa zoxide duf tree jq stow
+  # Ubuntu 24.04 dropped `exa` (unmaintained) for the `eza` fork; 22.04 only has
+  # `exa`. .zshrc already prefers eza and falls back, so install whichever this
+  # release actually ships rather than hard-failing on one of them.
+  if apt-cache show eza >/dev/null 2>&1; then LS_PKG=eza; else LS_PKG=exa; fi
+  CLI_QOL=(fzf ripgrep fd-find bat "$LS_PKG" zoxide duf tree jq stow
            htop btop neofetch cmatrix xclip xsel xdotool
            unzip p7zip-full net-tools dnsutils)
   CPP=(cmake ninja-build ccache clang clangd clang-format clang-tidy lldb
@@ -250,7 +304,13 @@ fi
 # =============================================================================
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   log "Installing oh-my-zsh..."
-  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+  # KEEP_ZSHRC=yes is load-bearing: without it the oh-my-zsh installer writes its
+  # own ~/.zshrc from a template. install.sh (step 6) then sees a file that is
+  # newer than the repo's and differs, refuses to overwrite it, and the machine
+  # boots with the stock oh-my-zsh config instead of this one. Every fresh box
+  # hit that until 2026-08-21.
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
     || note_fail "oh-my-zsh install"
 else
   log "oh-my-zsh already present"
@@ -403,11 +463,14 @@ fi
 # key, add it to GitHub, and re-run.
 # =============================================================================
 if [[ ! -d "$PRIVATE_DIR/.git" ]]; then
-  log "Cloning private repo..."
-  if ! git clone "$PRIVATE_REMOTE" "$PRIVATE_DIR" >/dev/null 2>&1; then
-    note_fail "private repo clone (no SSH key on this machine yet?)"
-    warn "  ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_github_personal"
-    warn "  then add the .pub at https://github.com/settings/keys and re-run"
+  if ((HAVE_GH_KEY)); then
+    log "Cloning private repo..."
+    git clone "$PRIVATE_REMOTE" "$PRIVATE_DIR" >/dev/null 2>&1 \
+      || note_fail "private repo clone failed (key works, but access denied?)"
+  else
+    # Skipped deliberately rather than attempted-and-failed: this repo is SSH-only,
+    # so with no key it cannot succeed and the failure tells you nothing new.
+    note_fail "private repo — skipped, no GitHub SSH key on this box yet"
   fi
 else
   log "private repo already present"
@@ -421,13 +484,24 @@ LINK_SSH=1 bash "$DOTFILES/install.sh" || note_fail "install.sh reported conflic
 # =============================================================================
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
   log "Cloning TPM..."
-  git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" >/dev/null 2>&1 \
+  gitc clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" >/dev/null 2>&1 \
     || note_fail "tpm"
 fi
 
 if have nvim; then
   log "Syncing nvim plugins..."
-  nvim --headless "+Lazy! sync" +qa >/dev/null 2>&1 || warn "nvim Lazy sync had issues"
+  nvimc --headless "+Lazy! sync" +qa >/dev/null 2>&1 || true
+  # Check the OUTCOME, not the exit code. `Lazy! sync` exits 0 even when every
+  # clone fails, which is how a run reported success while installing nothing.
+  want=$(grep -c '^  "' "$DOTFILES/nvim/lazy-lock.json" 2>/dev/null || echo 0)
+  got=$(find "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l)
+  if (( got == 0 )); then
+    note_fail "nvim plugins: 0 of ~$want installed — see the keys note above"
+  elif (( want > 0 && got < want / 2 )); then
+    note_fail "nvim plugins: only $got of ~$want installed"
+  else
+    log "  $got plugins present"
+  fi
 fi
 
 if [[ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]]; then
@@ -448,8 +522,31 @@ if have zsh; then
   current_shell=$(readlink -f "$(getent passwd "$USER" | cut -d: -f7)" 2>/dev/null)
   want_shell=$(readlink -f "$(command -v zsh)" 2>/dev/null)
   if [[ "$current_shell" != "$want_shell" ]]; then
-    log "Default shell is $current_shell — changing to zsh (prompts for your password)"
-    chsh -s "$(command -v zsh)" || note_fail "chsh — run 'chsh -s $(command -v zsh)' manually"
+    if ! grep -q "^${USER}:" /etc/passwd 2>/dev/null; then
+      # Directory-managed user (LDAP/SSSD/AD). chsh only edits /etc/passwd, so it
+      # fails with "user does not exist in /etc/passwd" — true on every HTAA box.
+      # Hand off from bash instead. Machine-local: never written to the repo.
+      log "$USER is not a local user — chsh cannot work here; installing a zsh handoff"
+      if [[ ! -f "$HOME/.bash_profile" ]] || ! grep -q 'exec zsh -l' "$HOME/.bash_profile"; then
+        cat >> "$HOME/.bash_profile" <<'BASHPROFILE'
+
+# Directory-managed user: not in /etc/passwd, so chsh cannot set the login
+# shell. Do normal bash startup, then hand interactive logins to zsh.
+# Escape hatch if zsh ever breaks:  ssh <host> -t bash --noprofile
+[ -f ~/.profile ] && . ~/.profile
+[ -f ~/.bashrc ]  && . ~/.bashrc
+if [ -t 1 ] && [ -z "${ZSH_VERSION:-}" ] && command -v zsh >/dev/null 2>&1; then
+  exec zsh -l
+fi
+BASHPROFILE
+        log "  added zsh handoff to ~/.bash_profile (takes effect next login)"
+      else
+        log "  zsh handoff already in ~/.bash_profile"
+      fi
+    else
+      log "Default shell is $current_shell — changing to zsh (prompts for your password)"
+      chsh -s "$(command -v zsh)" || note_fail "chsh — run 'chsh -s $(command -v zsh)' manually"
+    fi
   else
     log "Default shell already zsh"
   fi
